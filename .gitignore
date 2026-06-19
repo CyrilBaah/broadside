@@ -1,0 +1,26 @@
+# dependencies
+node_modules/
+
+# next.js build output
+.next/
+out/
+build/
+
+# env files (never commit secrets, e.g. the FR-003a GitHub token)
+.env
+.env*.local
+!.env.local.example
+
+# testing
+coverage/
+playwright-report/
+test-results/
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# misc
+.DS_Store
+*.log
+.vercel
