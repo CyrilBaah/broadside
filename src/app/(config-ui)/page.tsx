@@ -2,14 +2,21 @@
 
 import { useState, type FormEvent } from "react";
 import { CardPreview } from "@/components/card-preview/CardPreview";
+import { CustomizationPanel } from "@/components/customization-panel/CustomizationPanel";
+import { DescriptionOverride } from "@/components/customization-panel/DescriptionOverride";
+import { LogoUpload } from "@/components/customization-panel/LogoUpload";
+import { ShareableUrl } from "@/components/customization-panel/ShareableUrl";
 import { InvalidRepoUrlError, parseRepoUrl } from "@/lib/config/parse-repo-url";
 import { defaultConfigFor, type RepoCardConfig } from "@/lib/config/schema";
+import { buildCardPath } from "@/lib/config/url-codec";
 
 /**
  * FR-001/FR-002/FR-014: the core loop entry point — paste a repo URL, get an
  * immediate live preview with sensible defaults, or a clear friendly error if
  * the URL is malformed (private/nonexistent repos surface their own friendly
  * error inside the rendered card itself, per contracts/card-image-endpoint.md).
+ * Once a card exists, US2's customization panel (FR-005-FR-008) lets the user
+ * adjust it live and grab a shareable URL.
  */
 export default function ConfigUiPage() {
   const [url, setUrl] = useState("");
@@ -32,6 +39,11 @@ export default function ConfigUiPage() {
       );
     }
   }
+
+  const shareableUrl =
+    config && typeof window !== "undefined"
+      ? `${window.location.origin}${buildCardPath(config)}`
+      : null;
 
   return (
     <main style={{ maxWidth: 1200, margin: "0 auto", padding: "48px 24px" }}>
@@ -76,7 +88,24 @@ export default function ConfigUiPage() {
         </p>
       ) : null}
 
-      {config ? <CardPreview config={config} /> : null}
+      {config ? (
+        <>
+          <CustomizationPanel config={config} onChange={setConfig} />
+          <div style={{ display: "flex", gap: 16, marginBottom: 24, flexWrap: "wrap" }}>
+            <LogoUpload value={config.logo} onChange={(logo) => setConfig({ ...config, logo })} />
+            <DescriptionOverride
+              value={config.descriptionOverride ?? ""}
+              onChange={(descriptionOverride) =>
+                setConfig({ ...config, descriptionOverride: descriptionOverride || undefined })
+              }
+            />
+          </div>
+
+          <CardPreview config={config} />
+
+          {shareableUrl ? <ShareableUrl url={shareableUrl} /> : null}
+        </>
+      ) : null}
     </main>
   );
 }

@@ -2,7 +2,9 @@ import type { ReactElement } from "react";
 import satori from "satori";
 import { loadFonts } from "./fonts";
 import { DefaultTemplate } from "./templates/default";
+import { MinimalTemplate } from "./templates/minimal";
 import { PlaceholderCard } from "./templates/placeholder";
+import { StatsForwardTemplate } from "./templates/stats-forward";
 import { CARD_HEIGHT, CARD_WIDTH, type TemplateProps } from "./types";
 import type { Template } from "../config/schema";
 
@@ -34,9 +36,9 @@ function templateFor(template: Template) {
     case "default":
       return DefaultTemplate;
     case "minimal":
-      return DefaultTemplate; // overridden once T030 (Minimal template) lands
+      return MinimalTemplate;
     case "stats-forward":
-      return DefaultTemplate; // overridden once T031 (Stats-forward template) lands
+      return StatsForwardTemplate;
     default:
       return DefaultTemplate;
   }

@@ -94,20 +94,20 @@ Single Next.js project per plan.md: `src/app/`, `src/components/`, `src/lib/`, `
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T026 [P] [US2] Unit test for config URL encode/decode round-trip in `tests/unit/url-codec.test.ts` (FR-008, SC-005)
-- [ ] T027 [P] [US2] Unit test for logo upload validation (size/type limits) in `tests/unit/logo-validation.test.ts` (FR-006)
-- [ ] T028 [P] [US2] Integration test for the customization round-trip (change knobs → shareable URL reproduces card) in `tests/integration/customization-roundtrip.test.ts` (SC-005)
-- [ ] T029 [US2] E2E test for the full customization flow in `tests/e2e/customize-card.spec.ts` (US2 acceptance scenarios)
+- [X] T026 [P] [US2] Unit test for config URL encode/decode round-trip in `tests/unit/url-codec.test.ts` (FR-008, SC-005)
+- [X] T027 [P] [US2] Unit test for logo upload validation (size/type limits) in `tests/unit/logo-validation.test.ts` (FR-006)
+- [X] T028 [P] [US2] Integration test for the customization round-trip (change knobs → shareable URL reproduces card) in `tests/integration/customization-roundtrip.test.ts` (SC-005)
+- [X] T029 [US2] E2E test for the full customization flow in `tests/e2e/customize-card.spec.ts` (US2 acceptance scenarios)
 
 ### Implementation for User Story 2
 
-- [ ] T030 [P] [US2] Implement the Minimal layout template in `src/lib/render/templates/minimal.ts` (FR-004)
-- [ ] T031 [P] [US2] Implement the Stats-forward layout template in `src/lib/render/templates/stats-forward.ts` (FR-004)
-- [ ] T032 [US2] Build the customization panel UI (theme/font/pattern/template selectors) in `src/components/customization-panel/CustomizationPanel.tsx` (FR-005), updating T009's config state
-- [ ] T033 [US2] Implement logo upload handling with size/type validation in `src/lib/config/logo-upload.ts` and wire into the customization panel (FR-006)
-- [ ] T034 [US2] Implement the description override input in `src/components/customization-panel/DescriptionOverride.tsx` (FR-007)
-- [ ] T035 [US2] Wire customization panel changes to the live preview (T022) and to the shareable config URL (T009) (US2 Acceptance Scenarios 1-4)
-- [ ] T036 [US2] Implement shareable URL generation/display for the current configuration in `src/app/(config-ui)/page.tsx` (FR-008, SC-005)
+- [X] T030 [P] [US2] Implement the Minimal layout template in `src/lib/render/templates/minimal.ts` (FR-004)
+- [X] T031 [P] [US2] Implement the Stats-forward layout template in `src/lib/render/templates/stats-forward.ts` (FR-004)
+- [X] T032 [US2] Build the customization panel UI (theme/font/pattern/template selectors) in `src/components/customization-panel/CustomizationPanel.tsx` (FR-005), updating T009's config state
+- [X] T033 [US2] Implement logo upload handling with size/type validation in `src/lib/config/logo-upload.ts` and wire into the customization panel (FR-006)
+- [X] T034 [US2] Implement the description override input in `src/components/customization-panel/DescriptionOverride.tsx` (FR-007)
+- [X] T035 [US2] Wire customization panel changes to the live preview (T022) and to the shareable config URL (T009) (US2 Acceptance Scenarios 1-4)
+- [X] T036 [US2] Implement shareable URL generation/display for the current configuration in `src/app/(config-ui)/page.tsx` (FR-008, SC-005)
 
 **Checkpoint**: User Stories 1 AND 2 both work independently.
 
