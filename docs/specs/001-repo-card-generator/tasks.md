@@ -5,7 +5,7 @@ description: "Task list for Repo Announcement Card Generator implementation"
 
 # Tasks: Repo Announcement Card Generator
 
-**Input**: Design documents from `/specs/001-repo-card-generator/`
+**Input**: Design documents from `/docs/specs/001-repo-card-generator/`
 
 **Prerequisites**: [plan.md](./plan.md), [spec.md](./spec.md), [research.md](./research.md), [data-model.md](./data-model.md), [contracts/card-image-endpoint.md](./contracts/card-image-endpoint.md), [quickstart.md](./quickstart.md)
 

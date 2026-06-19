@@ -2,7 +2,7 @@
 
 **Branch**: `001-repo-card-generator` | **Date**: 2026-06-19 | **Spec**: [spec.md](./spec.md)
 
-**Input**: Feature specification from `/specs/001-repo-card-generator/spec.md`
+**Input**: Feature specification from `/docs/specs/001-repo-card-generator/spec.md`
 
 **Note**: This template is filled in by the `/speckit-plan` command. See `.specify/templates/plan-template.md` for the execution workflow.
 
@@ -99,7 +99,7 @@ No violations identified; Complexity Tracking table is not needed.
 ### Documentation (this feature)
 
 ```text
-specs/001-repo-card-generator/
+docs/specs/001-repo-card-generator/
 ├── plan.md              # This file (/speckit-plan command output)
 ├── research.md          # Phase 0 output (/speckit-plan command)
 ├── data-model.md        # Phase 1 output (/speckit-plan command)
