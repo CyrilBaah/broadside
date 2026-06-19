@@ -124,6 +124,22 @@ All Technical Context items from [plan.md](./plan.md) are resolved below; no
   and latency risk for marginal benefit); leaving limits unspecified (rejected —
   FR-006 needs a concrete, testable threshold).
 
+## 9a. ESLint version (Constitution IV deviation, documented)
+
+- **Decision**: Pin `eslint` to `9.39.4` rather than the latest major (`10.x`).
+- **Rationale**: `eslint-config-next@16.2.9` bundles `eslint-plugin-react@7.37.5`,
+  whose `peerDependencies` cap support at `eslint@^9.7` — running it under ESLint 10
+  throws at lint time (`contextOrFilename.getFilename is not a function`), a real
+  upstream incompatibility confirmed by running `npm run lint` during
+  implementation, not a hypothetical. Constitution IV permits "latest stable
+  unless explicitly exempted" with documented rationale; this is that exemption.
+- **Alternatives considered**: ESLint 10 with `eslint-config-next` (rejected —
+  lint cannot run at all, confirmed by reproducing the crash); dropping
+  `eslint-config-next` in favor of hand-rolled rules (rejected — directly
+  contradicts Constitution VI's reuse-over-reinvention principle for marginal
+  gain). Revisit this pin once `eslint-config-next` ships peer support for
+  ESLint 10.
+
 ## 10. Hosting platform
 
 - **Decision**: Deferred to implementation — any platform offering a generous free

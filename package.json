@@ -20,6 +20,7 @@
     "react-dom": "19.2.7",
     "satori": "0.26.0",
     "@resvg/resvg-js": "2.6.2",
+    "sharp": "0.35.2",
     "@octokit/rest": "22.0.1"
   },
   "overrides": {
@@ -30,12 +31,12 @@
     "@types/node": "26.0.0",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
-    "eslint": "10.5.0",
+    "eslint": "9.39.4",
     "eslint-config-next": "16.2.9",
-    "@eslint/eslintrc": "3.3.5",
     "prettier": "3.8.4",
     "vitest": "4.1.9",
     "@vitejs/plugin-react": "6.0.2",
-    "@playwright/test": "1.61.0"
+    "@playwright/test": "1.61.0",
+    "@fontsource/inter": "5.2.8"
   }
 }

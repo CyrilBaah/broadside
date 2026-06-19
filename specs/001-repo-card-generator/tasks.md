@@ -44,16 +44,16 @@ Single Next.js project per plan.md: `src/app/`, `src/components/`, `src/lib/`, `
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T007 Define the Repo Card Configuration type/schema in `src/lib/config/schema.ts` (data-model.md): normalized owner/repo, theme, font, pattern, template, logo, descriptionOverride, format
-- [ ] T008 [P] Implement repo URL parsing & canonicalization in `src/lib/config/parse-repo-url.ts` — normalize to lowercase `owner/repo`, stripping protocol, trailing slash, and `.git` suffix (FR-001)
-- [ ] T009 [P] Implement config encode/decode to/from URL query parameters in `src/lib/config/url-codec.ts` (FR-008, contracts/card-image-endpoint.md)
-- [ ] T010 Implement an Octokit-based GitHub client authenticated with the server-side credential from T006 in `src/lib/github/client.ts` (FR-003a, research.md §3)
-- [ ] T011 Implement the Repo Stats Snapshot fetcher (stars, forks, open issues, primary language, open PRs) in `src/lib/github/stats.ts` (FR-003, data-model.md), built on T010
-- [ ] T012 Implement a short-TTL (10–15 min) cache with last-known-good fallback and never-fetched placeholder state in `src/lib/cache/repo-stats-cache.ts` (FR-011, FR-012, data-model.md state transitions), wrapping T011
-- [ ] T013 Implement the base card rendering function `(template, params, cachedStats) → SVG` in `src/lib/render/render-card.ts` (PRD §5 architecture, research.md §2)
-- [ ] T014 [P] Implement the SVG → PNG/JPEG/WebP raster export step in `src/lib/render/export-image.ts` (FR-010), consuming T013's output
-- [ ] T015 Implement the Default layout template in `src/lib/render/templates/default.ts` (FR-004), consumed by T013
-- [ ] T016 Create the card image Route Handler skeleton in `src/app/api/card/[owner]/[repo]/route.ts`, wiring T008, T009, T012, T013, and T015 together per contracts/card-image-endpoint.md
+- [X] T007 Define the Repo Card Configuration type/schema in `src/lib/config/schema.ts` (data-model.md): normalized owner/repo, theme, font, pattern, template, logo, descriptionOverride, format
+- [X] T008 [P] Implement repo URL parsing & canonicalization in `src/lib/config/parse-repo-url.ts` — normalize to lowercase `owner/repo`, stripping protocol, trailing slash, and `.git` suffix (FR-001)
+- [X] T009 [P] Implement config encode/decode to/from URL query parameters in `src/lib/config/url-codec.ts` (FR-008, contracts/card-image-endpoint.md)
+- [X] T010 Implement an Octokit-based GitHub client authenticated with the server-side credential from T006 in `src/lib/github/client.ts` (FR-003a, research.md §3)
+- [X] T011 Implement the Repo Stats Snapshot fetcher (stars, forks, open issues, primary language, open PRs) in `src/lib/github/stats.ts` (FR-003, data-model.md), built on T010
+- [X] T012 Implement a short-TTL (10–15 min) cache with last-known-good fallback and never-fetched placeholder state in `src/lib/cache/repo-stats-cache.ts` (FR-011, FR-012, data-model.md state transitions), wrapping T011
+- [X] T013 Implement the base card rendering function `(template, params, cachedStats) → SVG` in `src/lib/render/render-card.ts` (PRD §5 architecture, research.md §2)
+- [X] T014 [P] Implement the SVG → PNG/JPEG/WebP raster export step in `src/lib/render/export-image.ts` (FR-010), consuming T013's output
+- [X] T015 Implement the Default layout template in `src/lib/render/templates/default.ts` (FR-004), consumed by T013
+- [X] T016 Create the card image Route Handler skeleton in `src/app/api/card/[owner]/[repo]/route.ts`, wiring T008, T009, T012, T013, and T015 together per contracts/card-image-endpoint.md
 
 **Checkpoint**: Foundation ready — user story implementation can now begin
 
