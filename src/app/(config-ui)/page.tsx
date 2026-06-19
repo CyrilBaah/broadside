@@ -102,6 +102,10 @@ export default function ConfigUiPage() {
 
           <ExportPanel config={config} baseUrl={baseUrl} />
         </>
+      ) : !parseError ? (
+        <p style={{ color: "#8b949e", fontStyle: "italic" }}>
+          Your card preview will appear here once you generate one.
+        </p>
       ) : null}
     </main>
   );

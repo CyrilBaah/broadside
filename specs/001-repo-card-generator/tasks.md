@@ -140,12 +140,12 @@ Single Next.js project per plan.md: `src/app/`, `src/components/`, `src/lib/`, `
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T044 [P] Run all quickstart.md validation scenarios manually end-to-end
-- [ ] T045 [P] Pass over error/loading/empty state styling across the UI per Constitution III (UX Consistency)
-- [ ] T046 Audit `src/lib/github/client.ts` and route handler responses to confirm the GitHub token is never logged or exposed client-side (FR-003a)
-- [ ] T047 [P] Pin exact dependency versions in the lockfile and run a dependency/security audit per Constitution IV
-- [ ] T048 Confirm non-Latin text (CJK/Arabic) renders without breaking output across all three templates (Edge Cases)
-- [ ] T049 Code cleanup pass; remove dead code and unnecessary comments per Constitution I
+- [X] T044 [P] Run all quickstart.md validation scenarios manually end-to-end
+- [X] T045 [P] Pass over error/loading/empty state styling across the UI per Constitution III (UX Consistency)
+- [X] T046 Audit `src/lib/github/client.ts` and route handler responses to confirm the GitHub token is never logged or exposed client-side (FR-003a)
+- [X] T047 [P] Pin exact dependency versions in the lockfile and run a dependency/security audit per Constitution IV
+- [X] T048 Confirm non-Latin text (CJK/Arabic) renders without breaking output across all three templates (Edge Cases)
+- [X] T049 Code cleanup pass; remove dead code and unnecessary comments per Constitution I
 
 ---
 
