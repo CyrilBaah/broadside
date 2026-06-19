@@ -121,16 +121,16 @@ Single Next.js project per plan.md: `src/app/`, `src/components/`, `src/lib/`, `
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T037 [P] [US3] Unit test for copy-snippet generation (raw URL/Markdown/HTML) in `tests/unit/embed-snippets.test.ts` (FR-009a)
-- [ ] T038 [P] [US3] Integration test for live URL re-render reflecting stat changes within the cache TTL in `tests/integration/live-url-refresh.test.ts` (FR-009)
-- [ ] T039 [US3] E2E test for the export flow (live link + snippets + static download) in `tests/e2e/export-card.spec.ts` (US3 acceptance scenarios)
+- [X] T037 [P] [US3] Unit test for copy-snippet generation (raw URL/Markdown/HTML) in `tests/unit/embed-snippets.test.ts` (FR-009a)
+- [X] T038 [P] [US3] Integration test for live URL re-render reflecting stat changes within the cache TTL in `tests/integration/live-url-refresh.test.ts` (FR-009)
+- [X] T039 [US3] E2E test for the export flow (live link + snippets + static download) in `tests/e2e/export-card.spec.ts` (US3 acceptance scenarios)
 
 ### Implementation for User Story 3
 
-- [ ] T040 [US3] Implement format-specific static download response handling (png/jpeg/webp) in `src/app/api/card/[owner]/[repo]/route.ts` (FR-010), extending T016/T014
-- [ ] T041 [US3] Implement cache-control headers aligned with the stats TTL on the route handler in `src/app/api/card/[owner]/[repo]/route.ts` (FR-009, FR-011)
-- [ ] T042 [P] [US3] Implement embed snippet generation (raw URL, Markdown image, HTML img tag) in `src/lib/config/embed-snippets.ts` (FR-009a, contracts/card-image-endpoint.md §Copy-paste embed snippets)
-- [ ] T043 [US3] Build the export panel UI with one-click copy buttons and a download action in `src/components/customization-panel/ExportPanel.tsx` (FR-009a, FR-010), using T042
+- [X] T040 [US3] Implement format-specific static download response handling (png/jpeg/webp) in `src/app/api/card/[owner]/[repo]/route.ts` (FR-010), extending T016/T014
+- [X] T041 [US3] Implement cache-control headers aligned with the stats TTL on the route handler in `src/app/api/card/[owner]/[repo]/route.ts` (FR-009, FR-011)
+- [X] T042 [P] [US3] Implement embed snippet generation (raw URL, Markdown image, HTML img tag) in `src/lib/config/embed-snippets.ts` (FR-009a, contracts/card-image-endpoint.md §Copy-paste embed snippets)
+- [X] T043 [US3] Build the export panel UI with one-click copy buttons and a download action in `src/components/customization-panel/ExportPanel.tsx` (FR-009a, FR-010), using T042
 
 **Checkpoint**: All user stories are independently functional.
 

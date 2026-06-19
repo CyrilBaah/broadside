@@ -4,19 +4,19 @@ import { useState, type FormEvent } from "react";
 import { CardPreview } from "@/components/card-preview/CardPreview";
 import { CustomizationPanel } from "@/components/customization-panel/CustomizationPanel";
 import { DescriptionOverride } from "@/components/customization-panel/DescriptionOverride";
+import { ExportPanel } from "@/components/customization-panel/ExportPanel";
 import { LogoUpload } from "@/components/customization-panel/LogoUpload";
-import { ShareableUrl } from "@/components/customization-panel/ShareableUrl";
 import { InvalidRepoUrlError, parseRepoUrl } from "@/lib/config/parse-repo-url";
 import { defaultConfigFor, type RepoCardConfig } from "@/lib/config/schema";
-import { buildCardPath } from "@/lib/config/url-codec";
 
 /**
  * FR-001/FR-002/FR-014: the core loop entry point — paste a repo URL, get an
  * immediate live preview with sensible defaults, or a clear friendly error if
  * the URL is malformed (private/nonexistent repos surface their own friendly
  * error inside the rendered card itself, per contracts/card-image-endpoint.md).
- * Once a card exists, US2's customization panel (FR-005-FR-008) lets the user
- * adjust it live and grab a shareable URL.
+ * Once a card exists, the customization panel (FR-005-FR-008) lets the user
+ * adjust it live, and the export panel (FR-009a, FR-010) provides the
+ * embed snippets and static download.
  */
 export default function ConfigUiPage() {
   const [url, setUrl] = useState("");
@@ -40,10 +40,7 @@ export default function ConfigUiPage() {
     }
   }
 
-  const shareableUrl =
-    config && typeof window !== "undefined"
-      ? `${window.location.origin}${buildCardPath(config)}`
-      : null;
+  const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
 
   return (
     <main style={{ maxWidth: 1200, margin: "0 auto", padding: "48px 24px" }}>
@@ -103,7 +100,7 @@ export default function ConfigUiPage() {
 
           <CardPreview config={config} />
 
-          {shareableUrl ? <ShareableUrl url={shareableUrl} /> : null}
+          <ExportPanel config={config} baseUrl={baseUrl} />
         </>
       ) : null}
     </main>
