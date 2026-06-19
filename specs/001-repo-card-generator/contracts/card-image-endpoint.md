@@ -46,12 +46,14 @@ Example (from PRD §3.1): `broadside.dev/{owner}/{repo}.png?theme=Dark&pattern=C
   for this repo (`status: never-fetched` in data-model.md), the image still renders
   at 200 with a clear placeholder visual rather than erroring (FR-012). This keeps
   embeds (e.g. in a README) from showing a broken-image icon.
-- **4xx** — returned only for structurally invalid requests: unparseable
-  `owner`/`repo`, unsupported `ext`, or a repo that is private/nonexistent
-  (FR-001, FR-014). The error response itself is still a renderable image (a clear
-  "couldn't load" card) so that embedding contexts never show a raw broken-image
-  icon — this is a content choice for the UI/embed experience, not a deviation from
-  standard HTTP semantics for API consumers.
+- **200 OK, always — even for errors**: unparseable `owner`/`repo`, unsupported
+  `ext`, or a repo that is private/nonexistent (FR-001, FR-014) all render a clear
+  "couldn't load" card and return status 200, never a 4xx/5xx. Corrected during
+  implementation: browsers treat any non-2xx `<img src>` response as a broken
+  image regardless of body content, so a real 404/500 would defeat FR-012/FR-014's
+  "never a broken card" guarantee for the primary consumer of this endpoint — a
+  bare `<img>`/Markdown embed in someone's README has no other channel to receive
+  an error through. The image content is the only error signal this endpoint has.
 - Non-Latin repo names/descriptions (CJK, Arabic, etc.) are not an error case —
   they render best-effort via the rendering library's default text support
   (clarified 2026-06-19); the endpoint never 4xxs solely because the text isn't

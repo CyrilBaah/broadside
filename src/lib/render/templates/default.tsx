@@ -24,9 +24,11 @@ export function DefaultTemplate({ config, snapshot }: TemplateProps) {
         width: CARD_WIDTH,
         height: CARD_HEIGHT,
         backgroundColor: colors.background,
-        backgroundImage,
         fontFamily: "Inter",
         padding: 56,
+        // satori's CSS parser expects a string when this key is present at
+        // all, so it's spread in conditionally rather than set to undefined.
+        ...(backgroundImage ? { backgroundImage } : {}),
       }}
     >
       <div style={{ display: "flex", flexDirection: "column" }}>

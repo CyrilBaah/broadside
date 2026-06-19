@@ -69,18 +69,18 @@ Single Next.js project per plan.md: `src/app/`, `src/components/`, `src/lib/`, `
 
 > Write these tests FIRST, ensure they FAIL before implementation
 
-- [ ] T017 [P] [US1] Unit test for repo URL normalization in `tests/unit/parse-repo-url.test.ts` (FR-001)
-- [ ] T018 [P] [US1] Unit test for cache fallback state transitions in `tests/unit/repo-stats-cache.test.ts` (FR-011, FR-012)
-- [ ] T019 [P] [US1] Integration test for default card render end-to-end (valid repo → preview) in `tests/integration/default-card-render.test.ts` (FR-002, FR-003, SC-001)
-- [ ] T020 [US1] E2E test for the core preview flow in `tests/e2e/core-preview.spec.ts` (paste URL → preview renders)
+- [X] T017 [P] [US1] Unit test for repo URL normalization in `tests/unit/parse-repo-url.test.ts` (FR-001)
+- [X] T018 [P] [US1] Unit test for cache fallback state transitions in `tests/unit/repo-stats-cache.test.ts` (FR-011, FR-012)
+- [X] T019 [P] [US1] Integration test for default card render end-to-end (valid repo → preview) in `tests/integration/default-card-render.test.ts` (FR-002, FR-003, SC-001)
+- [X] T020 [US1] E2E test for the core preview flow in `tests/e2e/core-preview.spec.ts` (paste URL → preview renders)
 
 ### Implementation for User Story 1
 
-- [ ] T021 [US1] Build the repo URL input UI in `src/app/(config-ui)/page.tsx`, using T008 for client-side validation
-- [ ] T022 [US1] Build the card preview component in `src/components/card-preview/CardPreview.tsx`, rendering the route handler's image (T016)
-- [ ] T023 [US1] Implement invalid/malformed/private/nonexistent URL error handling and friendly error UI in `src/app/(config-ui)/page.tsx` and `src/lib/config/parse-repo-url.ts` (FR-014)
-- [ ] T024 [US1] Implement the never-fetched placeholder rendering path in `src/lib/render/templates/placeholder.ts`, wired into T013/T016 (FR-012)
-- [ ] T025 [US1] Wire the default preview load (default theme/font/pattern/template) end-to-end from input through T016 (FR-002, SC-001)
+- [X] T021 [US1] Build the repo URL input UI in `src/app/(config-ui)/page.tsx`, using T008 for client-side validation
+- [X] T022 [US1] Build the card preview component in `src/components/card-preview/CardPreview.tsx`, rendering the route handler's image (T016)
+- [X] T023 [US1] Implement invalid/malformed/private/nonexistent URL error handling and friendly error UI in `src/app/(config-ui)/page.tsx` and `src/lib/config/parse-repo-url.ts` (FR-014)
+- [X] T024 [US1] Implement the never-fetched placeholder rendering path in `src/lib/render/templates/placeholder.ts`, wired into T013/T016 (FR-012)
+- [X] T025 [US1] Wire the default preview load (default theme/font/pattern/template) end-to-end from input through T016 (FR-002, SC-001)
 
 **Checkpoint**: User Story 1 is fully functional and testable independently — this is the MVP.
 

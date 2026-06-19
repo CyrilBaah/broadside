@@ -26,7 +26,7 @@ export async function GET(
   const ext = rawExt === "jpg" ? "jpeg" : rawExt;
 
   if (!isImageFormat(ext)) {
-    return errorImageResponse(`"${rawExt}" isn't a supported image format. Use png, jpg, or webp.`, 400);
+    return errorImageResponse(`"${rawExt}" isn't a supported image format. Use png, jpg, or webp.`);
   }
 
   const lowerOwner = owner.toLowerCase();
@@ -35,7 +35,7 @@ export async function GET(
   config.format = ext;
 
   if (config.logo && !isLikelyValidLogoReference(config.logo)) {
-    return errorImageResponse("That logo reference isn't valid; the default icon will be used.", 200, {
+    return errorImageResponse("That logo reference isn't valid; the default icon will be used.", {
       config,
     });
   }
@@ -55,11 +55,10 @@ export async function GET(
     });
   } catch (error) {
     if (error instanceof RepoNotFoundError) {
-      return errorImageResponse(error.message, 404, { config });
+      return errorImageResponse(error.message, { config });
     }
     return errorImageResponse(
       "Something went wrong rendering this card. Please try again shortly.",
-      500,
       { config },
     );
   }
@@ -82,9 +81,15 @@ function isLikelyValidLogoReference(logo: string): boolean {
   return /^https?:\/\//i.test(logo);
 }
 
+/**
+ * Always responds 200, even for "errors" — browsers treat any non-2xx <img src>
+ * response as a broken image regardless of body content, so a 404/500 here
+ * would defeat FR-012/FR-014's "never a broken card" guarantee for the README
+ * embed use case (the primary consumer of this endpoint). The image content
+ * itself communicates the problem instead (PRD §4, SC-003).
+ */
 async function errorImageResponse(
   message: string,
-  status: number,
   options?: { config?: { theme: "light" | "dark" } },
 ) {
   const theme = options?.config?.theme ?? "light";
@@ -92,7 +97,7 @@ async function errorImageResponse(
   const image = await exportImage(svg, "png");
 
   return new NextResponse(new Uint8Array(image), {
-    status,
+    status: 200,
     headers: { "Content-Type": "image/png" },
   });
 }

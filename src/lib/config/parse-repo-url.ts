@@ -12,7 +12,10 @@ export class InvalidRepoUrlError extends Error {
   }
 }
 
-const OWNER_REPO_PATTERN = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i;
+// GitHub owner (user/org) names: alphanumeric and hyphens only, no leading/trailing hyphen.
+const OWNER_PATTERN = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i;
+// GitHub repo names additionally allow dots and underscores (e.g. "next.js").
+const REPO_PATTERN = /^[a-z0-9._-]+$/i;
 
 export interface ParsedRepo {
   owner: string;
@@ -52,7 +55,7 @@ export function parseRepoUrl(input: string): ParsedRepo {
   const owner = ownerRaw.toLowerCase();
   const repo = repoRaw.toLowerCase();
 
-  if (!OWNER_REPO_PATTERN.test(owner) || !OWNER_REPO_PATTERN.test(repo)) {
+  if (!OWNER_PATTERN.test(owner) || !REPO_PATTERN.test(repo)) {
     throw new InvalidRepoUrlError(input);
   }
 
