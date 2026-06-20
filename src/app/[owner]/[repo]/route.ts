@@ -1,14 +1,13 @@
+import dns from "node:dns/promises";
 import { NextRequest, NextResponse } from "next/server";
 import { decodeConfig } from "@/lib/config/url-codec";
-import {
-  ALLOWED_LOGO_MIME_TYPES,
-  IMAGE_FORMATS,
-  type ImageFormat,
-} from "@/lib/config/schema";
-import { getRepoStatsSnapshot } from "@/lib/cache/repo-stats-cache";
+import { isPrivateOrReservedHost, validateLogoReference } from "@/lib/config/logo-upload";
+import { IMAGE_FORMATS, type ImageFormat } from "@/lib/config/schema";
+import { getRepoStatsSnapshot, peekRepoStatsSnapshot } from "@/lib/cache/repo-stats-cache";
 import { RepoNotFoundError } from "@/lib/github/stats";
 import { contentTypeFor, exportImage } from "@/lib/render/export-image";
 import { renderCardToSvg, renderErrorCardToSvg } from "@/lib/render/render-card";
+import { allowRequest } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -34,9 +33,24 @@ export async function GET(
   const config = decodeConfig(lowerOwner, lowerRepo, request.nextUrl.searchParams);
   config.format = ext;
 
-  if (config.logo && !isLikelyValidLogoReference(config.logo)) {
+  if (config.logo && !(await isSafeLogoReference(config.logo))) {
     return errorImageResponse("That logo reference isn't valid; the default icon will be used.", {
       config,
+    });
+  }
+
+  // FR-018: a client exceeding the per-IP limit still gets a usable response
+  // (cached/placeholder) rather than an error, so existing embeds never break.
+  if (!allowRequest(clientIp(request))) {
+    const snapshot = peekRepoStatsSnapshot(lowerOwner, lowerRepo);
+    const svg = await renderCardToSvg({ config, snapshot });
+    const image = await exportImage(svg, ext);
+    return new NextResponse(new Uint8Array(image), {
+      status: 200,
+      headers: {
+        "Content-Type": contentTypeFor(ext),
+        "Cache-Control": "public, max-age=720, s-maxage=720, stale-while-revalidate=60",
+      },
     });
   }
 
@@ -74,11 +88,37 @@ function isImageFormat(ext: string): ext is ImageFormat {
   return (IMAGE_FORMATS as readonly string[]).includes(ext);
 }
 
-function isLikelyValidLogoReference(logo: string): boolean {
-  if (logo.startsWith("data:")) {
-    return ALLOWED_LOGO_MIME_TYPES.some((mime) => logo.startsWith(`data:${mime}`));
+/**
+ * FR-015 SSRF protection: validateLogoReference rejects non-http(s) schemes
+ * and literal private/internal/loopback/link-local hosts; this additionally
+ * resolves a remote hostname's DNS records before any image fetch happens
+ * downstream, rejecting if any resolved address is in such a range (guards
+ * against DNS rebinding, which a literal-IP check alone can't catch).
+ */
+async function isSafeLogoReference(logo: string): Promise<boolean> {
+  try {
+    validateLogoReference(logo);
+  } catch {
+    return false;
   }
-  return /^https?:\/\//i.test(logo);
+
+  if (logo.startsWith("data:")) return true;
+
+  const hostname = new URL(logo).hostname;
+  if (isPrivateOrReservedHost(hostname)) return false;
+
+  try {
+    const records = await dns.lookup(hostname, { all: true });
+    return records.every((record) => !isPrivateOrReservedHost(record.address));
+  } catch {
+    return false;
+  }
+}
+
+function clientIp(request: NextRequest): string {
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  if (forwardedFor) return (forwardedFor.split(",")[0] ?? forwardedFor).trim();
+  return request.headers.get("x-real-ip") ?? "unknown";
 }
 
 /**

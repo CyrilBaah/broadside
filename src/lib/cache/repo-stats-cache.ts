@@ -71,6 +71,19 @@ export async function getRepoStatsSnapshot(owner: string, repo: string): Promise
   }
 }
 
+/**
+ * FR-018: when a client has exceeded the per-IP rate limit, the route handler
+ * uses this instead of getRepoStatsSnapshot to avoid triggering a fresh
+ * GitHub fetch — serves whatever's already cached (fresh or stale) or
+ * "never-fetched" if nothing is cached yet, never erroring.
+ */
+export function peekRepoStatsSnapshot(owner: string, repo: string): RepoStatsSnapshot {
+  const key = cacheKey(owner, repo);
+  const existing = cache.get(key);
+  if (!existing) return toSnapshot("never-fetched", undefined);
+  return toSnapshot(isFresh(existing) ? "fresh" : "stale-fallback", existing);
+}
+
 function isNotFoundError(error: unknown): boolean {
   return (
     typeof error === "object" &&
