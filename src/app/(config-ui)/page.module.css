@@ -23,9 +23,9 @@
   --ink: oklch(96% 0.006 var(--hue-ink));
   --ink-muted: oklch(80% 0.014 var(--hue-ink));
   --ink-faint: oklch(64% 0.017 var(--hue-ink));
-  --accent: oklch(66% 0.19 var(--hue-ink));
-  --accent-strong: oklch(73% 0.17 var(--hue-ink));
-  --accent-on: oklch(13% 0.012 var(--hue-ink));
+  --accent: oklch(52% 0.19 var(--hue-ink));
+  --accent-strong: oklch(60% 0.18 var(--hue-ink));
+  --accent-on: oklch(99% 0.004 var(--hue-ink));
   --danger: oklch(70% 0.16 22);
   color-scheme: dark;
   background: var(--bg);

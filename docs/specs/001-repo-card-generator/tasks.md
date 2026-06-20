@@ -161,6 +161,81 @@ status and image load, not just the `src` string.
 
 ---
 
+## Phase 7: Scope Addition (2026-06-20) — Language Icon, Field Visibility, Logo via URL
+
+**Goal**: Extends User Story 2 with the three capabilities added to spec.md/plan.md
+after the gap analysis against the reference competitor's panel: FR-015 (logo via
+pasted URL/data URI), FR-016 (language icon with override), FR-017 (per-field
+visibility toggles). Acceptance Scenarios 6-8 under User Story 2 in spec.md.
+
+**Independent Test**: With a card already rendered, (a) toggle each of the eight
+field-visibility checkboxes and confirm the preview adds/removes exactly that
+field; (b) pick a different language icon from the picker and confirm the preview
+switches to it; (c) paste an image URL or data URI into the logo field and confirm
+the preview shows it, without re-entering the repo URL for any of the three.
+
+### Tests for Phase 7 ⚠️
+
+- [X] T050 [P] [US2] E2E test for the field-visibility checkboxes (defaults + toggle updates preview src) in `tests/e2e/customize-card.spec.ts` (FR-017, US2 Acceptance Scenario 8)
+- [X] T051 [P] [US2] Unit test for the curated language-icon registry's match logic (`languageIconFor`, exact + case-insensitive lookups, no-match fallback) in `tests/unit/language-icons.test.ts` (FR-016)
+- [X] T052 [US2] E2E test: picking a language icon from the picker updates the preview src with `languageIcon=` in `tests/e2e/customize-card.spec.ts` (FR-016, US2 Acceptance Scenario 7)
+- [X] T053 [P] [US2] Unit test for logo-via-URL/data-URI validation — valid URL, valid `data:image/...` URI, malformed value rejected, AND a private/internal/loopback/link-local IP or non-http(s)-scheme URL rejected before fetch (SSRF, clarified 2026-06-20) — in `tests/unit/logo-url-validation.test.ts` (FR-015)
+- [X] T054 [US2] E2E test: pasting a logo URL/data-URI updates the preview, and a malformed paste is rejected with the prior logo retained, in `tests/e2e/customize-card.spec.ts` (FR-015, US2 Acceptance Scenario 6)
+- [X] T055 [US2] Extend `tests/integration/customization-roundtrip.test.ts` to round-trip `languageIcon` and `fields` together through a shareable URL (FR-016, FR-017, SC-005)
+
+### Implementation for Phase 7
+
+- [X] T056 [US2] Add `FieldKey`/`FIELD_KEYS`/`DEFAULT_VISIBLE_FIELDS` and a `fields: FieldKey[]` member on `RepoCardConfig` in `src/lib/config/schema.ts` (FR-017, data-model.md `visibleFields`)
+- [X] T057 [US2] Encode/decode the `fields` query parameter (comma-separated, omit-if-default) in `src/lib/config/url-codec.ts` (FR-017, contracts/card-image-endpoint.md)
+- [X] T058 [P] [US2] Build the `FieldVisibility` checkbox grid UI in `src/components/customization-panel/FieldVisibility.tsx`, wired into `src/app/(config-ui)/page.tsx` (FR-017)
+- [X] T059 [US2] Filter rendered stat badges by `fields` in `src/lib/render/stat-badges.tsx` (returning nothing if the filtered set is empty, per Edge Cases) and gate name/owner/description in `src/lib/render/templates/{default,minimal,stats-forward}.tsx` (FR-017)
+- [X] T060 [US2] Curate and bundle a Simple Icons subset as static path data via `scripts/extract-language-icons.mjs` → `src/lib/icons/language-icons.ts`, plus the shared `LanguageIconGlyph` renderer in `src/lib/icons/LanguageIconGlyph.tsx` (FR-016, research.md §11)
+- [X] T061 [US2] Add a `languageIcon` member on `RepoCardConfig` and its query-param encode/decode in `src/lib/config/schema.ts` / `src/lib/config/url-codec.ts` (FR-016)
+- [X] T062 [P] [US2] Build the searchable `LanguageIconPicker` popover UI in `src/components/customization-panel/LanguageIconPicker.tsx`, auto-suggesting from the repo's detected `primaryLanguage` (FR-016)
+- [X] T063 [US2] Render the GitHub-mark + language-icon combo lockup (auto-detected or overridden, falling back to the existing logo/placeholder) in `src/lib/render/card-mark.tsx`, wired into all three templates (FR-016, Edge Cases: no-match falls back to text-only)
+- [X] T064 [US2] Add a "paste image URL or data URI" input alongside the existing file control in `src/components/customization-panel/LogoUpload.tsx`, accepting either form into the same `logo` field (FR-015)
+- [X] T065 [US2] Validate a pasted logo value is a syntactically valid URL or `data:image/...` URI in `src/lib/config/logo-upload.ts`, rejecting non-http(s) schemes and any hostname/IP that resolves to a private, internal, loopback, or link-local range *before* attempting a fetch (SSRF protection, clarified 2026-06-20); confirm satori/sharp can decode the remaining valid values at render time; reject otherwise with the same clear-error contract as FR-006, retaining the prior logo state (FR-015, data-model.md validation rules)
+
+**Checkpoint**: User Story 2 now also covers FR-015/016/017 independently of US1/US3.
+
+---
+
+## Phase 8: Clarification Follow-ups (2026-06-20) — Endpoint Rate Limiting, Accessibility Baseline
+
+**Purpose**: Covers the two genuinely new, cross-cutting requirements added during the
+2026-06-20 `/speckit-clarify` session that don't belong to any single user story:
+FR-018 (per-IP rate limit on the public image endpoint) and SC-006 (WCAG AA +
+keyboard-operability baseline). The SSRF hardening from the same session was folded
+directly into Phase 7's T053/T065 (FR-015), since that feature isn't implemented yet.
+
+- [X] T066 [P] Integration test: a client exceeding the per-IP rate limit on the image endpoint still receives a 200 with cached/placeholder content, never a 4xx/5xx, in `tests/integration/rate-limit.test.ts` (FR-018)
+- [X] T067 Implement a per-IP rate limit at the edge in `src/app/[owner]/[repo]/route.ts`, falling back to the existing cached/placeholder response (T012's fallback chain) rather than an error when exceeded, consistent with the endpoint's existing "always 200" contract (FR-018, contracts/card-image-endpoint.md)
+- [X] T068 [P] Automated accessibility check (axe or equivalent) across the repo-input form, customization panel, and export panel in `tests/e2e/accessibility.spec.ts` (SC-006)
+- [X] T069 [P] Keyboard-operability and focus-visible audit across all customization controls (`FieldVisibility`, `LanguageIconPicker`, `LogoUpload`, `SegmentedControl`, `ExportPanel`, the landing-stage repo input) per SC-006, fixing any control reachable only by mouse
+- [X] T070 [P] WCAG AA contrast audit across the light theme, dark theme, and the landing stage's fixed-dark palette (`src/app/(config-ui)/page.module.css`), fixing any failing color pair (SC-006)
+
+**Checkpoint**: The public endpoint degrades gracefully under abuse, and every
+customization control is keyboard-operable with WCAG AA contrast.
+
+**Implementation notes (2026-06-20)**: SSRF protection (T053/T065) splits across two
+layers — `validateLogoReference`/`isPrivateOrReservedHost` in `src/lib/config/logo-upload.ts`
+do a synchronous syntax/scheme/literal-IP check usable from both the client component
+and the route handler; `src/app/[owner]/[repo]/route.ts` additionally resolves a
+hostname via `node:dns/promises` before rendering, rejecting if any resolved address
+is private/internal/loopback/link-local (guards DNS rebinding, which the literal-IP
+check alone can't catch). Rate limiting (T067) is an in-memory fixed-window counter in
+`src/lib/rate-limit.ts` (acceptable at this app's single-instance deployment scale);
+when exceeded, the route serves whatever's already cached via the new
+`peekRepoStatsSnapshot` (`src/lib/cache/repo-stats-cache.ts`) instead of triggering a
+fresh GitHub fetch. T070's contrast audit found one real AA failure — the landing
+stage's submit button (2.92:1, needed 4.5:1) — fixed by darkening `--accent` and
+switching `--accent-on` to near-white text in that stage's palette
+(`src/app/(config-ui)/page.module.css`); T069's keyboard audit found no actual gaps,
+since every control was already a native `<button>`/`<input>`/`<a>` or a correctly
+roving-tabindex `radiogroup` (`SegmentedControl`).
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
@@ -171,6 +246,13 @@ status and image load, not just the `src` string.
 - **User Story 2 (Phase 4)**: Depends on Foundational; reuses US1's preview component (T022) and route handler (T016) but is independently testable on top of them
 - **User Story 3 (Phase 5)**: Depends on Foundational; reuses US1's route handler (T016) and rendering pipeline (T013/T014) but is independently testable
 - **Polish (Phase 6)**: Depends on all desired user stories being complete
+- **Scope Addition (Phase 7)**: Depends on Foundational (Phase 2) and User Story 2's
+  panel/route wiring (Phase 4, T032/T035); independently testable per FR-015/016/017,
+  no dependency on Phase 5/6 ordering
+- **Clarification Follow-ups (Phase 8)**: T066/T067 (rate limiting) depend on the
+  route handler existing (T016/T040/T041) but not on Phase 7; T068/T069/T070
+  (accessibility) depend on every control they audit already existing, so in
+  practice run last, after Phases 3-7 are complete
 
 ### Within Each User Story
 
@@ -185,6 +267,8 @@ status and image load, not just the `src` string.
 - All [P] tests within a story phase can run in parallel
 - T030 and T031 (different template files) can run in parallel
 - US2 and US3 implementation can proceed in parallel by different developers once US1 (and thus Foundational) is done, since they touch different files except the shared route handler (T016/T040/T041 — sequence these if the same person isn't doing both)
+- T051 and T053 (Phase 7, different files, no shared dependencies) can run in parallel; T058 and T062 (different component files) can run in parallel
+- T066, T068, T069, T070 (Phase 8, all marked [P], different files/concerns) can all run in parallel; T067 depends on T066 existing first (test before implementation)
 
 ---
 
