@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { defaultConfigFor } from "@/lib/config/schema";
+import { defaultConfigFor, type FieldKey } from "@/lib/config/schema";
 import { buildCardPath, decodeConfig } from "@/lib/config/url-codec";
 
 /**
@@ -39,5 +39,22 @@ describe("customization round-trip (SC-005)", () => {
     expect(reproduced.theme).toBe("dark");
     expect(reproduced.font).toBe("mono");
     expect(reproduced.pattern).toBe("dots");
+  });
+
+  it("round-trips languageIcon and fields together (FR-016, FR-017)", () => {
+    const customized = {
+      ...defaultConfigFor("vercel", "next.js"),
+      languageIcon: "rust",
+      fields: ["name", "stars", "forks", "pullRequests"] as FieldKey[],
+    };
+
+    const path = buildCardPath(customized);
+    const url = new URL(`https://broadside.dev${path}`);
+    const repo = url.pathname.split("/")[2]!.replace(/\.\w+$/, "");
+
+    const reproduced = decodeConfig(customized.owner, repo, url.searchParams);
+
+    expect(reproduced.languageIcon).toBe("rust");
+    expect(reproduced.fields.sort()).toEqual(["forks", "name", "pullRequests", "stars"]);
   });
 });
