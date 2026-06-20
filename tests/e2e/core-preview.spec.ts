@@ -10,11 +10,21 @@ test.describe("core preview flow", () => {
     await page.goto("/");
 
     await page.getByPlaceholder("github.com/owner/repo").fill("github.com/vercel/next.js");
+
+    // Checking the <img> src attribute alone isn't enough — it can match the
+    // expected pattern while still 404ing if the route path and the URL
+    // builder ever drift apart (a real bug this caught: the route handler
+    // briefly lived at /api/card/[owner]/[repo] while buildCardPath() built
+    // /[owner]/[repo], so every preview 404'd despite the src looking right).
+    const responsePromise = page.waitForResponse((res) => res.url().includes("vercel/next.js.png"));
     await page.getByRole("button", { name: "Generate" }).click();
+    const response = await responsePromise;
+    expect(response.status()).toBe(200);
 
     const preview = page.getByAltText("vercel/next.js announcement card");
     await expect(preview).toBeVisible();
     await expect(preview).toHaveAttribute("src", /\/vercel\/next\.js\.png/);
+    await expect(preview).toHaveJSProperty("naturalWidth", 1200);
   });
 
   test("shows a friendly inline error for a malformed URL, never a crash", async ({ page }) => {

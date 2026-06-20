@@ -53,7 +53,7 @@ Single Next.js project per plan.md: `src/app/`, `src/components/`, `src/lib/`, `
 - [X] T013 Implement the base card rendering function `(template, params, cachedStats) → SVG` in `src/lib/render/render-card.ts` (PRD §5 architecture, research.md §2)
 - [X] T014 [P] Implement the SVG → PNG/JPEG/WebP raster export step in `src/lib/render/export-image.ts` (FR-010), consuming T013's output
 - [X] T015 Implement the Default layout template in `src/lib/render/templates/default.ts` (FR-004), consumed by T013
-- [X] T016 Create the card image Route Handler skeleton in `src/app/api/card/[owner]/[repo]/route.ts`, wiring T008, T009, T012, T013, and T015 together per contracts/card-image-endpoint.md
+- [X] T016 Create the card image Route Handler skeleton in `src/app/[owner]/[repo]/route.ts`, wiring T008, T009, T012, T013, and T015 together per contracts/card-image-endpoint.md
 
 **Checkpoint**: Foundation ready — user story implementation can now begin
 
@@ -127,8 +127,8 @@ Single Next.js project per plan.md: `src/app/`, `src/components/`, `src/lib/`, `
 
 ### Implementation for User Story 3
 
-- [X] T040 [US3] Implement format-specific static download response handling (png/jpeg/webp) in `src/app/api/card/[owner]/[repo]/route.ts` (FR-010), extending T016/T014
-- [X] T041 [US3] Implement cache-control headers aligned with the stats TTL on the route handler in `src/app/api/card/[owner]/[repo]/route.ts` (FR-009, FR-011)
+- [X] T040 [US3] Implement format-specific static download response handling (png/jpeg/webp) in `src/app/[owner]/[repo]/route.ts` (FR-010), extending T016/T014
+- [X] T041 [US3] Implement cache-control headers aligned with the stats TTL on the route handler in `src/app/[owner]/[repo]/route.ts` (FR-009, FR-011)
 - [X] T042 [P] [US3] Implement embed snippet generation (raw URL, Markdown image, HTML img tag) in `src/lib/config/embed-snippets.ts` (FR-009a, contracts/card-image-endpoint.md §Copy-paste embed snippets)
 - [X] T043 [US3] Build the export panel UI with one-click copy buttons and a download action in `src/components/customization-panel/ExportPanel.tsx` (FR-009a, FR-010), using T042
 
@@ -146,6 +146,18 @@ Single Next.js project per plan.md: `src/app/`, `src/components/`, `src/lib/`, `
 - [X] T047 [P] Pin exact dependency versions in the lockfile and run a dependency/security audit per Constitution IV
 - [X] T048 Confirm non-Latin text (CJK/Arabic) renders without breaking output across all three templates (Edge Cases)
 - [X] T049 Code cleanup pass; remove dead code and unnecessary comments per Constitution I
+
+**Post-implementation fix (2026-06-19)**: T016/T040/T041's route handler was initially
+placed at `src/app/api/card/[owner]/[repo]/route.ts`, but `buildCardPath()`
+(per contracts/card-image-endpoint.md's documented `GET /{owner}/{repo}.{ext}`
+shape) built URLs without the `/api/card` prefix — every preview 404'd in the
+real browser despite all 49 tasks' tests passing, because no test exercised
+the route handler directly or checked that an `<img>` actually loaded (only
+that its `src` attribute matched a pattern). Fixed by moving the route to
+`src/app/[owner]/[repo]/route.ts` to match the documented contract. Added
+`tests/integration/card-route.test.ts` (closes the `/speckit-analyze` F2
+finding) and strengthened `core-preview.spec.ts` to assert on actual response
+status and image load, not just the `src` string.
 
 ---
 
@@ -213,7 +225,7 @@ With multiple developers, once Foundational is done:
 - Developer B: User Story 3 (after US1's route handler skeleton exists from Foundational)
 - Developer C: User Story 2
 
-Coordinate on `src/app/api/card/[owner]/[repo]/route.ts` since US1 (T016), US3 (T040, T041) all touch it.
+Coordinate on `src/app/[owner]/[repo]/route.ts` since US1 (T016), US3 (T040, T041) all touch it.
 
 ---
 
