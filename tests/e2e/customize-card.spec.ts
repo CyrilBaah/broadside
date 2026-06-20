@@ -67,4 +67,43 @@ test.describe("customization flow", () => {
 
     await expect(preview).toHaveAttribute("src", /description=Pin/);
   });
+
+  // FR-016, US2 Acceptance Scenario 7.
+  test("picking a language icon updates the preview src with languageIcon=", async ({ page }) => {
+    await page.goto("/");
+    await page.getByPlaceholder("github.com/owner/repo").fill("github.com/vercel/next.js");
+    await page.getByRole("button", { name: "Generate" }).click();
+
+    const preview = page.getByAltText("vercel/next.js announcement card");
+    await expect(preview).toBeVisible();
+
+    await page.getByRole("button", { name: "Auto-detect" }).click();
+    await page.getByRole("listbox", { name: "Language icon" }).getByRole("option", { name: "Rust" }).click();
+
+    await expect(preview).toHaveAttribute("src", /languageIcon=rust/);
+  });
+
+  // FR-015, US2 Acceptance Scenario 6.
+  test("pasting a logo URL updates the preview; a malformed paste is rejected and the prior logo is kept", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.getByPlaceholder("github.com/owner/repo").fill("github.com/vercel/next.js");
+    await page.getByRole("button", { name: "Generate" }).click();
+
+    const preview = page.getByAltText("vercel/next.js announcement card");
+    await expect(preview).toBeVisible();
+
+    const urlInput = page.getByLabel("Or paste an image URL or data URI");
+    await urlInput.fill("https://example.com/logo.png");
+    await page.getByRole("button", { name: "Use" }).click();
+
+    await expect(preview).toHaveAttribute("src", /logo=https%3A%2F%2Fexample\.com%2Flogo\.png/);
+
+    await urlInput.fill("not a url at all");
+    await page.getByRole("button", { name: "Use" }).click();
+
+    await expect(page.locator('p[role="alert"]')).toBeVisible();
+    await expect(preview).toHaveAttribute("src", /logo=https%3A%2F%2Fexample\.com%2Flogo\.png/);
+  });
 });
