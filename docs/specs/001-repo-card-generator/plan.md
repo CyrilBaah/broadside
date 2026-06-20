@@ -15,6 +15,15 @@ configuration encoded in the URL, and export it as either a stable live-link ima
 or a static PNG/JPEG/WebP download — with no accounts and no broken/blank states even
 when the GitHub API is unavailable (last-known-good cache fallback).
 
+**Scope addition (2026-06-20)**: gap analysis against a reference competitor's
+customization panel (Socialify) surfaced three missing customization capabilities,
+now covered by FR-015/FR-016/FR-017 in spec.md: setting the logo via a pasted image
+URL/data URI as an alternative to file upload, a visual language icon (with manual
+override) alongside the existing text label, and independent show/hide toggles for
+each card field (name, owner, language, stars, forks, issues, pull requests,
+description). Everything else the reference panel showed (repository field, theme,
+font, background pattern) was already covered by FR-004/FR-005.
+
 ## Technical Context
 
 **Language/Version**: TypeScript on Node.js (Next.js App Router) — exact Next.js/Node
@@ -24,7 +33,10 @@ at implementation time (Constitution V).
 **Primary Dependencies**: Next.js (UI + Route Handlers in one app), an SVG-template
 image renderer such as `satori` (+ a raster export step) for PNG/JPEG/WebP output, and
 Octokit (GitHub's official REST client) for fetching repo stats — see research.md for
-rationale.
+rationale. `lucide-react` (already a dependency, used for the rest of the UI's icons)
+has no per-programming-language brand icons, so FR-016's language icon set needs its
+own small bundled SVG asset — see research.md §5 (NEEDS CLARIFICATION resolved) for
+the chosen source/approach.
 
 **Storage**: N/A — no database (per PRD §5). Repo stats use a short-TTL in-memory/edge
 cache with last-known-good fallback (FR-011/FR-012); card configuration is not
@@ -54,7 +66,12 @@ last-known-good fallback rather than blank/broken output (FR-011/FR-012, PRD §4
 GitHub stats fetching MUST use a server-side credential, not unauthenticated
 requests, to avoid the 60 req/hr/IP public rate limit (FR-003a); logo uploads
 capped at 2MB, PNG/JPEG/WebP/SVG only (FR-006); non-Latin repo text rendered
-best-effort, never blocking or blanking the card (Edge Cases).
+best-effort, never blocking or blanking the card (Edge Cases). A pasted logo
+URL/data URI (FR-015) cannot be size-checked the same way a local file upload
+can — validate it is a syntactically valid URL or `data:image/...` URI and that
+satori/sharp can decode it at render time, rejecting with the same clear-error
+contract as FR-006/FR-014 otherwise, rather than enforcing a byte-size cap
+client-side.
 
 **Scale/Scope**: One feature covering the full v1 core loop; three layout templates;
 stateless per-request rendering keyed off a public repo URL — no user-concurrency
@@ -92,6 +109,13 @@ logged, and authenticates the *app* to GitHub — not a user. It introduces no U
 surface (no re-check needed against III) and no user-facing account (no conflict
 with the no-accounts principle).
 
+**Note on FR-015/FR-016/FR-017 (2026-06-20 scope addition)**: re-evaluated against
+all six principles — PASS, no new violations. FR-016's language icon set reuses an
+existing maintained open-source icon source rather than hand-drawn icons (VI); all
+three additions extend the existing `RepoCardConfig` shape and `CustomizationPanel`
+UI vocabulary (III) rather than introducing a new pattern, and each ships with its
+own unit/e2e coverage per `/speckit-tasks` (II).
+
 No violations identified; Complexity Tracking table is not needed.
 
 ## Project Structure
@@ -123,6 +147,7 @@ src/
     ├── github/                 # Octokit-based repo stats fetching
     ├── cache/                  # short-TTL cache + last-known-good fallback
     ├── render/                 # template + params + cached stats → SVG → PNG/JPEG/WebP
+    │   └── language-icons/     # bundled per-language SVG icon set (FR-016)
     └── config/                 # encode/decode shareable card configuration from URL params
 
 tests/

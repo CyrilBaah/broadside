@@ -150,3 +150,29 @@ All Technical Context items from [plan.md](./plan.md) are resolved below; no
   Context7 happens at implementation time per Constitution V.
 - **Alternatives considered**: N/A — intentionally left open per PRD §5's framing
   ("a platform," not a named one).
+
+## 11. Language icon set (FR-016, added 2026-06-20)
+
+- **Decision**: Bundle a small set of per-language SVG icons as local static
+  assets (e.g. a curated subset of an existing open-source brand-icon set such as
+  Simple Icons, sourced once and committed under
+  `src/lib/render/language-icons/`), keyed by GitHub's `language` string
+  (case-insensitive). A repo whose detected (or user-overridden) language has no
+  matching icon falls back to the existing text-only label — no generic/broken
+  icon glyph is ever rendered.
+- **Rationale**: `lucide-react`, the project's existing icon dependency, is a
+  generic UI icon set with no programming-language/brand icons, so it can't cover
+  this need (confirmed: no `JavaScript`/`Python`/etc. exports). Satori (the
+  rendering pipeline, §2) renders inline SVG directly, so locally bundled SVGs
+  need no extra runtime dependency or network fetch at render time, keeping the
+  "no broken card" guarantee (FR-012/FR-014) intact even if a third-party icon
+  CDN were ever down. Reuses an existing, permissively-licensed icon corpus
+  instead of hand-drawing icons (Constitution VI).
+- **Alternatives considered**: A third-party icon CDN/API fetched at render time
+  (rejected — adds a network dependency and failure mode to the image endpoint
+  that FR-011/FR-012's last-known-good/placeholder contract doesn't cover, and
+  risks rate-limiting or latency on every card render); generating icons via an
+  LLM/image-gen step (rejected — nondeterministic, unnecessary given mature
+  open-source icon sets exist); GitHub's own linguist language-color dots instead
+  of icons (rejected — doesn't satisfy "visual icon" from the reference panel;
+  may still be worth adding as a secondary accent later, not part of this scope).

@@ -1,7 +1,9 @@
+import { CardMark } from "../card-mark";
 import { colorsFor } from "../colors";
 import { backgroundImageFor } from "../patterns";
 import { StatBadges } from "../stat-badges";
 import { CARD_HEIGHT, CARD_WIDTH, type TemplateProps } from "../types";
+import { hasField } from "../../config/schema";
 
 /**
  * FR-004: Default layout — balanced logo/title/description + stat badges.
@@ -13,7 +15,9 @@ export function DefaultTemplate({ config, snapshot }: TemplateProps) {
   const colors = colorsFor(config.theme);
   const backgroundImage = backgroundImageFor(config.pattern, colors.border);
   const meta = snapshot.meta ?? { name: `${config.owner}/${config.repo}`, description: null };
-  const description = config.descriptionOverride ?? meta.description;
+  const description = hasField(config, "description") ? config.descriptionOverride ?? meta.description : null;
+  const showName = hasField(config, "name");
+  const showOwner = hasField(config, "owner");
 
   return (
     <div
@@ -33,29 +37,15 @@ export function DefaultTemplate({ config, snapshot }: TemplateProps) {
     >
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          {config.logo ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={config.logo}
-              width={56}
-              height={56}
-              style={{ borderRadius: 12 }}
-              alt=""
-            />
-          ) : (
-            <div
-              style={{
-                display: "flex",
-                width: 56,
-                height: 56,
-                borderRadius: 12,
-                backgroundColor: colors.accent,
-              }}
-            />
-          )}
-          <div style={{ fontSize: 40, fontWeight: 700, color: colors.text }}>
-            {meta.name}
-          </div>
+          <CardMark config={config} snapshot={snapshot} colors={colors} size={56} />
+          {showName || showOwner ? (
+            <div style={{ display: "flex", fontSize: 40, fontWeight: 700, color: colors.text }}>
+              {showOwner ? (
+                <span style={{ fontWeight: 400, color: colors.subtext }}>{config.owner}/</span>
+              ) : null}
+              {showName ? meta.name : null}
+            </div>
+          ) : null}
         </div>
         {description ? (
           <div style={{ fontSize: 22, color: colors.subtext, marginTop: 20, maxWidth: 880 }}>
@@ -65,7 +55,7 @@ export function DefaultTemplate({ config, snapshot }: TemplateProps) {
       </div>
 
       {snapshot.stats ? (
-        <StatBadges stats={snapshot.stats} colors={colors} />
+        <StatBadges stats={snapshot.stats} colors={colors} fields={config.fields} />
       ) : null}
     </div>
   );

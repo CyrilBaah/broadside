@@ -74,6 +74,31 @@ npm run dev
    - Upload a valid PNG/JPEG/WebP/SVG under 2MB; confirm it's accepted and
      displayed.
 
+6a. **Logo via pasted URL/data URI (FR-015)**
+   - Paste a valid image URL and confirm the preview shows it as the logo.
+   - Paste a valid `data:image/...` URI and confirm the same.
+   - Paste a malformed value or an unreachable/non-image URL; confirm a clear
+     error and that the prior logo state is retained.
+
+6b. **Language icon (FR-016)**
+   - Generate a card for a repo with a well-known primary language (e.g. a
+     TypeScript repo); confirm the auto-detected language icon renders alongside
+     the existing text label.
+   - Override the language icon via the picker; confirm the preview switches to
+     the selected icon.
+   - Generate a card for a repo with no detected primary language; confirm the
+     language field is omitted (no blank/broken icon) unless an override is set.
+
+6c. **Field visibility toggles (FR-017)**
+   - Toggle each of name, owner, language, stars, forks, issues, pull requests,
+     and description off one at a time; confirm the preview omits exactly that
+     field and nothing else.
+   - Toggle off all four stat-type fields (stars, forks, issues, pull requests);
+     confirm the stats row disappears entirely rather than leaving empty space.
+   - Toggle fields back on; confirm the preview restores them.
+   - Open a shared URL generated before this feature existed (no `fields` param);
+     confirm it still renders with every field visible, unchanged (SC-005).
+
 7. **Non-Latin text rendering**
    - Generate a card for a repo whose name or description contains non-Latin
      characters (e.g. a repo with a CJK description); confirm the card still

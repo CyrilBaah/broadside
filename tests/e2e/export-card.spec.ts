@@ -12,7 +12,7 @@ test.describe("export flow", () => {
 
     await expect(page.getByText("Raw URL")).toBeVisible();
     await expect(page.getByText("Markdown")).toBeVisible();
-    await expect(page.getByText("HTML")).toBeVisible();
+    await expect(page.getByText("HTML", { exact: true })).toBeVisible();
 
     const copyButtons = page.getByRole("button", { name: "Copy" });
     await expect(copyButtons).toHaveCount(3);
@@ -27,7 +27,7 @@ test.describe("export flow", () => {
     await expect(downloadLink).toBeVisible();
     await expect(downloadLink).toHaveAttribute("href", /\/vercel\/next\.js\.png/);
 
-    await page.getByRole("combobox").last().selectOption("webp");
+    await page.getByRole("radiogroup", { name: "Format" }).getByRole("radio", { name: "WEBP" }).click();
     await expect(downloadLink).toHaveAttribute("href", /\/vercel\/next\.js\.webp/);
   });
 });

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildCardPath, decodeConfig, encodeConfig } from "@/lib/config/url-codec";
-import { defaultConfigFor } from "@/lib/config/schema";
+import { defaultConfigFor, type FieldKey } from "@/lib/config/schema";
 
 describe("config URL encode/decode round-trip (FR-008, SC-005)", () => {
   it("round-trips the default config to an empty query string", () => {
@@ -22,7 +22,8 @@ describe("config URL encode/decode round-trip (FR-008, SC-005)", () => {
       pattern: "circuit" as const,
       template: "stats-forward" as const,
       format: "webp" as const,
-      logo: "https://example.com/logo.png",
+      fields: ["name", "stars", "forks", "issues", "pullRequests", "description"] as FieldKey[],
+      languageIcon: "rust",
       descriptionOverride: "Custom description!",
     };
 

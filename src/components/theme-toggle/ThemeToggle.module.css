@@ -1,0 +1,70 @@
+.toggle {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-base) var(--ease-out-quart),
+    border-color var(--duration-base) var(--ease-out-quart),
+    color var(--duration-base) var(--ease-out-quart),
+    transform var(--duration-fast) var(--ease-out-quart);
+}
+
+.toggle:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.toggle:active {
+  transform: scale(0.94);
+}
+
+.iconStack {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+}
+
+.sun,
+.moon {
+  position: absolute;
+  transition:
+    opacity var(--duration-base) var(--ease-out-quart),
+    transform var(--duration-base) var(--ease-out-quart);
+}
+
+.sun {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+.moon {
+  opacity: 0;
+  transform: scale(0.5) rotate(-90deg);
+}
+
+:global(html[data-theme="dark"]) .sun {
+  opacity: 0;
+  transform: scale(0.5) rotate(90deg);
+}
+
+:global(html[data-theme="dark"]) .moon {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sun,
+  .moon,
+  .toggle {
+    transition: none;
+  }
+}

@@ -15,28 +15,30 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@octokit/rest": "22.0.1",
+    "@resvg/resvg-js": "2.6.2",
+    "lucide-react": "^1.21.0",
     "next": "16.2.9",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "satori": "0.26.0",
-    "@resvg/resvg-js": "2.6.2",
-    "sharp": "0.35.2",
-    "@octokit/rest": "22.0.1"
+    "sharp": "0.35.2"
   },
   "overrides": {
     "postcss": "8.5.15"
   },
   "devDependencies": {
-    "typescript": "6.0.3",
+    "@fontsource/inter": "5.2.8",
+    "@playwright/test": "1.61.0",
     "@types/node": "26.0.0",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.2",
     "eslint": "9.39.4",
     "eslint-config-next": "16.2.9",
     "prettier": "3.8.4",
-    "vitest": "4.1.9",
-    "@vitejs/plugin-react": "6.0.2",
-    "@playwright/test": "1.61.0",
-    "@fontsource/inter": "5.2.8"
+    "simple-icons": "^16.23.0",
+    "typescript": "6.0.3",
+    "vitest": "4.1.9"
   }
 }

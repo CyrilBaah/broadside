@@ -30,10 +30,14 @@ detail of the endpoint's GitHub-fetch step, invisible to callers.
 | `font` | `font` | |
 | `pattern` | `pattern` | |
 | `template` | `template` | `default` \| `minimal` \| `stats-forward` |
-| `logo` | `logo` | Reference to an uploaded logo asset; PNG/JPEG/WebP/SVG only, max 2MB (FR-006) — oversized/unsupported uploads are rejected by the upload step before a reference is ever issued |
+| `logo` | `logo` | Either a reference to an uploaded logo asset (PNG/JPEG/WebP/SVG, max 2MB — FR-006) or a directly pasted image URL/data URI (FR-015); invalid/unsupported values are rejected before a usable reference is ever issued |
+| `languageIcon` | `languageIcon` | Optional override of which language icon renders (FR-016); unrecognized values are ignored, falling back to auto-derived-from-stats behavior |
+| `fields` | `visibleFields` | Optional comma-separated subset of `name,owner,language,stars,forks,issues,pullRequests,description` (FR-017); absent → all fields visible (today's default behavior, preserving existing shared links per SC-005); unknown tokens are ignored rather than rejected |
 | `description` | `descriptionOverride` | |
 
 Example (from PRD §3.1): `broadside.dev/{owner}/{repo}.png?theme=Dark&pattern=Circuit&template=Minimal`
+
+Example with the 2026-06-20 additions: `broadside.dev/{owner}/{repo}.png?logo=https%3A%2F%2Fexample.com%2Flogo.svg&languageIcon=typescript&fields=name,stars,forks,description`
 
 ## Response
 

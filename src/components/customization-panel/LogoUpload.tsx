@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, type ChangeEvent } from "react";
+import { Upload, X } from "lucide-react";
+import { useId, useState, type ChangeEvent } from "react";
 import { encodeLogoAsDataUri, validateLogoFile } from "@/lib/config/logo-upload";
+import styles from "./LogoUpload.module.css";
 
 export interface LogoUploadProps {
   value: string | undefined;
@@ -15,6 +17,8 @@ export interface LogoUploadProps {
  */
 export function LogoUpload({ value, onChange }: LogoUploadProps) {
   const [error, setError] = useState<string | null>(null);
+  const inputId = useId();
+  const errorId = useId();
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -33,30 +37,46 @@ export function LogoUpload({ value, onChange }: LogoUploadProps) {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", fontSize: 14, color: "#57606a" }}>
-      <label>
-        Logo
-        <input
-          type="file"
-          accept="image/png,image/jpeg,image/webp,image/svg+xml"
-          onChange={handleFileChange}
-          style={{ display: "block", marginTop: 4 }}
-        />
-      </label>
-      {value ? (
-        <button
-          type="button"
-          onClick={() => onChange(undefined)}
-          style={{ marginTop: 4, alignSelf: "flex-start", fontSize: 13 }}
-        >
-          Remove logo
-        </button>
-      ) : null}
+    <div className={styles.field}>
+      <span className={styles.label}>Logo</span>
+      <div className={styles.row}>
+        {value ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={value} alt="" width={40} height={40} className={styles.thumb} />
+        ) : null}
+
+        <label htmlFor={inputId} className={styles.dropzone}>
+          <Upload size={15} strokeWidth={2} aria-hidden="true" />
+          {value ? "Replace logo" : "Upload logo"}
+          <input
+            id={inputId}
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/svg+xml"
+            onChange={handleFileChange}
+            className={styles.input}
+            aria-describedby={error ? errorId : undefined}
+          />
+        </label>
+
+        {value ? (
+          <button
+            type="button"
+            onClick={() => onChange(undefined)}
+            className={styles.remove}
+            aria-label="Remove logo"
+            title="Remove logo"
+          >
+            <X size={15} strokeWidth={2} />
+          </button>
+        ) : null}
+      </div>
       {error ? (
-        <p role="alert" style={{ color: "#cf222e", marginTop: 4 }}>
+        <p id={errorId} role="alert" className={styles.error}>
           {error}
         </p>
-      ) : null}
+      ) : (
+        <p className={styles.hint}>PNG, JPEG, WebP, or SVG · max 2MB</p>
+      )}
     </div>
   );
 }

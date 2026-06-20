@@ -16,7 +16,9 @@ URL (FR-008); never stored server-side.
 | `font` | enum | no (default applies) | Font choice; default is system-standard |
 | `pattern` | enum | no (default: none) | Background pattern identifier |
 | `template` | enum: `default` \| `minimal` \| `stats-forward` | no (default: `default`) | Layout template (FR-004) |
-| `logo` | reference | no | Optional uploaded logo reference; absent → default repo icon |
+| `logo` | reference | no | Optional logo reference; absent → default repo icon. Either an uploaded file encoded as a data URI (FR-006) or a directly pasted image URL/data URI (FR-015) — both populate this same field |
+| `languageIcon` | string \| null | no | Optional manual override of which language icon renders (FR-016); absent → auto-derive from `primaryLanguage` on the Repo Stats Snapshot; no match for either → language field omitted |
+| `visibleFields` | set of enum | no (default: all visible) | Which of `name` \| `owner` \| `language` \| `stars` \| `forks` \| `issues` \| `pullRequests` \| `description` to render (FR-017); absent/empty set difference → that field defaults to visible, preserving today's always-shown behavior and existing shared URLs (SC-005) |
 | `descriptionOverride` | string | no | Optional custom text; absent → GitHub repo description, or no description line if that's also empty (per spec edge cases) |
 | `format` | enum: `png` \| `jpeg` \| `webp` | no (only relevant for static download, default: `png`) | Export format (FR-010) |
 
@@ -24,9 +26,17 @@ URL (FR-008); never stored server-side.
 - `owner`/`repo` are normalized (lowercased, protocol/trailing-slash/`.git` stripped,
   FR-001) before resolution, then must resolve to an existing, public, accessible
   GitHub repository; otherwise the request is rejected per FR-014.
-- `logo`, if present, must be PNG, JPEG, WebP, or SVG and no larger than 2MB
-  (FR-006); otherwise rejected with the prior logo state retained (per spec edge
-  cases).
+- `logo`, if present as an uploaded file, must be PNG, JPEG, WebP, or SVG and no
+  larger than 2MB (FR-006); if present as a pasted URL/data URI (FR-015), it must
+  be a syntactically valid URL or `data:image/...` URI that the render pipeline can
+  decode. Either invalid form is rejected with the prior logo state retained (per
+  spec edge cases) — a remote URL's byte size/type cannot be checked client-side
+  the way a local file can, so that check happens at render/decode time instead.
+- `languageIcon`, if present, must match a key in the bundled language icon set
+  (research.md §11); an unrecognized value is treated as absent (no override).
+- `visibleFields` has no invalid values beyond the fixed eight-field enum; unknown
+  field names in a shared URL are ignored rather than rejected, so future additions
+  to this set stay backward-compatible with older shared links.
 - Repo name/description text is rendered best-effort regardless of script (CJK,
   Arabic, etc.); no validation rule blocks non-Latin content (per spec edge cases).
 

@@ -1,7 +1,9 @@
+import { CardMark } from "../card-mark";
 import { colorsFor } from "../colors";
 import { backgroundImageFor } from "../patterns";
 import { StatBadges } from "../stat-badges";
 import { CARD_HEIGHT, CARD_WIDTH, type TemplateProps } from "../types";
+import { hasField } from "../../config/schema";
 
 /**
  * FR-004: Stats-forward layout — stat badges given visual priority, for
@@ -11,7 +13,9 @@ export function StatsForwardTemplate({ config, snapshot }: TemplateProps) {
   const colors = colorsFor(config.theme);
   const backgroundImage = backgroundImageFor(config.pattern, colors.border);
   const meta = snapshot.meta ?? { name: `${config.owner}/${config.repo}`, description: null };
-  const description = config.descriptionOverride ?? meta.description;
+  const description = hasField(config, "description") ? config.descriptionOverride ?? meta.description : null;
+  const showName = hasField(config, "name");
+  const showOwner = hasField(config, "owner");
 
   return (
     <div
@@ -27,21 +31,13 @@ export function StatsForwardTemplate({ config, snapshot }: TemplateProps) {
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-        {config.logo ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={config.logo} width={40} height={40} style={{ borderRadius: 10 }} alt="" />
-        ) : (
-          <div
-            style={{
-              display: "flex",
-              width: 40,
-              height: 40,
-              borderRadius: 10,
-              backgroundColor: colors.accent,
-            }}
-          />
-        )}
-        <div style={{ fontSize: 28, fontWeight: 700, color: colors.text }}>{meta.name}</div>
+        <CardMark config={config} snapshot={snapshot} colors={colors} size={40} />
+        {showName || showOwner ? (
+          <div style={{ display: "flex", fontSize: 28, fontWeight: 700, color: colors.text }}>
+            {showOwner ? <span style={{ fontWeight: 400, color: colors.subtext }}>{config.owner}/</span> : null}
+            {showName ? meta.name : null}
+          </div>
+        ) : null}
       </div>
 
       {description ? (
@@ -60,7 +56,7 @@ export function StatsForwardTemplate({ config, snapshot }: TemplateProps) {
         }}
       >
         {snapshot.stats ? (
-          <StatBadges stats={snapshot.stats} colors={colors} emphasized />
+          <StatBadges stats={snapshot.stats} colors={colors} fields={config.fields} emphasized />
         ) : null}
       </div>
     </div>

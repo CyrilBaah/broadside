@@ -4,10 +4,13 @@ import {
   DEFAULT_PATTERN,
   DEFAULT_TEMPLATE,
   DEFAULT_THEME,
+  DEFAULT_VISIBLE_FIELDS,
+  FIELD_KEYS,
   IMAGE_FORMATS,
   PATTERNS,
   TEMPLATES,
   THEMES,
+  type FieldKey,
   type ImageFormat,
   type Pattern,
   type RepoCardConfig,
@@ -42,7 +45,16 @@ export function decodeConfig(
 
   const font = params.get("font") ?? DEFAULT_FONT;
   const logo = params.get("logo") ?? undefined;
+  const languageIcon = params.get("languageIcon") ?? undefined;
   const descriptionOverride = params.get("description") ?? undefined;
+
+  const fieldsParam = params.get("fields");
+  const fields =
+    fieldsParam === null
+      ? [...DEFAULT_VISIBLE_FIELDS]
+      : fieldsParam
+          .split(",")
+          .filter((key): key is FieldKey => (FIELD_KEYS as readonly string[]).includes(key));
 
   return {
     owner,
@@ -52,7 +64,9 @@ export function decodeConfig(
     pattern,
     template,
     format,
+    fields: fields.length > 0 ? fields : [...DEFAULT_VISIBLE_FIELDS],
     ...(logo ? { logo } : {}),
+    ...(languageIcon ? { languageIcon } : {}),
     ...(descriptionOverride ? { descriptionOverride } : {}),
   };
 }
@@ -66,7 +80,14 @@ export function encodeConfig(config: RepoCardConfig): URLSearchParams {
   if (config.template !== DEFAULT_TEMPLATE) params.set("template", config.template);
   if (config.format !== DEFAULT_FORMAT) params.set("format", config.format);
   if (config.logo) params.set("logo", config.logo);
+  if (config.languageIcon) params.set("languageIcon", config.languageIcon);
   if (config.descriptionOverride) params.set("description", config.descriptionOverride);
+
+  const sortedFields = [...config.fields].sort();
+  const sortedDefaults = [...DEFAULT_VISIBLE_FIELDS].sort();
+  if (sortedFields.join(",") !== sortedDefaults.join(",")) {
+    params.set("fields", config.fields.join(","));
+  }
 
   return params;
 }

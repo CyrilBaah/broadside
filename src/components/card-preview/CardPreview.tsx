@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { ImageOff, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import type { RepoCardConfig } from "@/lib/config/schema";
 import { buildCardPath } from "@/lib/config/url-codec";
+import styles from "./CardPreview.module.css";
 
 export interface CardPreviewProps {
   config: RepoCardConfig;
@@ -12,74 +14,68 @@ export interface CardPreviewProps {
  * FR-002: renders the live preview by pointing an <img> at the same card
  * image endpoint used for the live-link/export outputs (contracts/card-image-endpoint.md)
  * — there's only one rendering path, so the preview always matches what gets shared.
- * Tracks loading/error states explicitly (Constitution III: treat loading and
- * error states as first-class, not an afterthought) since card generation can
- * take a couple of seconds (SC-001).
+ *
+ * Preloads the next image in the background and only swaps the visible <img>
+ * once it's ready, so toggling a control re-renders the card without
+ * blanking the frame to a spinner every time — the previous card stays put
+ * until the new one is actually available to replace it.
  */
 export function CardPreview({ config }: CardPreviewProps) {
   const src = buildCardPath(config, "png");
+  const alt = `${config.owner}/${config.repo} announcement card`;
+
+  // Tracked by src rather than a "status" enum set imperatively in the
+  // effect, so loading/failed/loaded are derived from state instead of
+  // requiring a synchronous setState at the top of the effect body.
+  const [loadedSrc, setLoadedSrc] = useState<string | null>(null);
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const preload = new window.Image();
+    preload.src = src;
+    preload.onload = () => {
+      if (!cancelled) setLoadedSrc(src);
+    };
+    preload.onerror = () => {
+      if (!cancelled) setFailedSrc(src);
+    };
+    return () => {
+      cancelled = true;
+    };
+  }, [src]);
+
+  const isCurrent = loadedSrc === src;
+  const isFailed = failedSrc === src && !isCurrent;
+  const isLoading = !isCurrent && !isFailed;
 
   return (
-    <div
-      style={{
-        width: "100%",
-        maxWidth: 1200,
-        aspectRatio: "1200 / 630",
-        border: "1px solid #d0d7de",
-        borderRadius: 12,
-        overflow: "hidden",
-        position: "relative",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#f6f8fa",
-      }}
-    >
-      {/* Keying by src forces a remount on every config change, so each
-          PreviewImage instance starts fresh in "loading" state without
-          needing an effect to reset it. */}
-      <PreviewImage key={src} src={src} alt={`${config.owner}/${config.repo} announcement card`} />
-    </div>
-  );
-}
-
-function PreviewImage({ src, alt }: { src: string; alt: string }) {
-  const [status, setStatus] = useState<"loading" | "loaded" | "failed">("loading");
-
-  if (status === "failed") {
-    return (
-      <p style={{ color: "#57606a", padding: 24, textAlign: "center" }}>
-        The preview couldn&apos;t load. Double-check the repo URL and try again.
-      </p>
-    );
-  }
-
-  return (
-    <>
-      {status === "loading" ? (
-        <p
-          role="status"
-          style={{ position: "absolute", color: "#57606a", padding: 24, textAlign: "center" }}
-        >
-          Generating preview…
-        </p>
+    <div className={styles.frame}>
+      {isFailed && !loadedSrc ? (
+        <div className={styles.message} role="alert">
+          <ImageOff size={28} strokeWidth={1.5} aria-hidden="true" />
+          <p>The preview couldn&apos;t load. Double-check the repo URL and try again.</p>
+        </div>
       ) : null}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={src}
-        alt={alt}
-        width={1200}
-        height={630}
-        style={{
-          width: "100%",
-          height: "auto",
-          display: "block",
-          opacity: status === "loaded" ? 1 : 0,
-          transition: "opacity 150ms ease-in",
-        }}
-        onLoad={() => setStatus("loaded")}
-        onError={() => setStatus("failed")}
-      />
-    </>
+
+      {isLoading && !loadedSrc ? (
+        <div className={styles.message} role="status">
+          <Loader2 size={24} strokeWidth={2} className={styles.spinner} aria-hidden="true" />
+          <p>Generating preview…</p>
+        </div>
+      ) : null}
+
+      {loadedSrc ? (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={loadedSrc} alt={alt} width={1200} height={630} className={styles.image} data-loaded />
+          {isLoading ? (
+            <div className={styles.updating} role="status" aria-label="Updating preview">
+              <Loader2 size={16} strokeWidth={2} className={styles.spinner} aria-hidden="true" />
+            </div>
+          ) : null}
+        </>
+      ) : null}
+    </div>
   );
 }

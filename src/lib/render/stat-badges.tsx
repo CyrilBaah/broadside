@@ -1,9 +1,13 @@
+import type { ReactNode } from "react";
 import type { ThemeColors } from "./colors";
 import type { RepoStats } from "../github/stats";
+import type { FieldKey } from "../config/schema";
 
 export interface StatBadgesProps {
   stats: RepoStats;
   colors: ThemeColors;
+  /** Which stat badges to render, per the Display fields checkboxes. */
+  fields: readonly FieldKey[];
   /** Larger badges for the stats-forward template (FR-004). */
   emphasized?: boolean;
 }
@@ -47,24 +51,56 @@ function Badge({
   );
 }
 
-/** FR-003: renders stars, forks, open issues, primary language, and open PRs. */
-export function StatBadges({ stats, colors, emphasized }: StatBadgesProps) {
-  return (
-    <div style={{ display: "flex", gap: emphasized ? 20 : 12 }}>
-      <Badge label="Stars" value={formatCount(stats.stars)} colors={colors} emphasized={emphasized} />
-      <Badge label="Forks" value={formatCount(stats.forks)} colors={colors} emphasized={emphasized} />
+/** FR-003: renders stars, forks, open issues, primary language, and open PRs — filtered by `fields`. */
+export function StatBadges({ stats, colors, fields, emphasized }: StatBadgesProps) {
+  const badges: ReactNode[] = [];
+  if (fields.includes("stars")) {
+    badges.push(
+      <Badge key="stars" label="Stars" value={formatCount(stats.stars)} colors={colors} emphasized={emphasized} />,
+    );
+  }
+  if (fields.includes("forks")) {
+    badges.push(
+      <Badge key="forks" label="Forks" value={formatCount(stats.forks)} colors={colors} emphasized={emphasized} />,
+    );
+  }
+  if (fields.includes("issues")) {
+    badges.push(
       <Badge
+        key="issues"
         label="Issues"
         value={formatCount(stats.openIssues)}
         colors={colors}
         emphasized={emphasized}
-      />
-      <Badge label="PRs" value={formatCount(stats.openPullRequests)} colors={colors} emphasized={emphasized} />
-      {stats.primaryLanguage ? (
-        <Badge label="Language" value={stats.primaryLanguage} colors={colors} emphasized={emphasized} />
-      ) : null}
-    </div>
-  );
+      />,
+    );
+  }
+  if (fields.includes("pullRequests")) {
+    badges.push(
+      <Badge
+        key="pullRequests"
+        label="PRs"
+        value={formatCount(stats.openPullRequests)}
+        colors={colors}
+        emphasized={emphasized}
+      />,
+    );
+  }
+  if (fields.includes("language") && stats.primaryLanguage) {
+    badges.push(
+      <Badge
+        key="language"
+        label="Language"
+        value={stats.primaryLanguage}
+        colors={colors}
+        emphasized={emphasized}
+      />,
+    );
+  }
+
+  if (badges.length === 0) return null;
+
+  return <div style={{ display: "flex", gap: emphasized ? 20 : 12 }}>{badges}</div>;
 }
 
 function formatCount(n: number): string {

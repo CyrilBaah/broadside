@@ -50,6 +50,9 @@ A user adjusts the theme/color, font, background pattern, layout template, logo,
 3. **Given** a rendered card preview, **When** the user uploads a logo image, **Then** the preview updates to display the uploaded logo in place of the default repo icon.
 4. **Given** a rendered card preview, **When** the user overrides the description text, **Then** the preview updates to show the custom description instead of the repo's GitHub description.
 5. **Given** a customized card, **When** the user shares the resulting configuration (via its URL), **Then** another person opening that URL sees the identical customized card without signing in.
+6. **Given** a rendered card preview, **When** the user pastes an image URL or a data URI into the logo field instead of uploading a file, **Then** the preview updates to show that image as the logo.
+7. **Given** a rendered card preview showing an auto-detected primary language, **When** the user picks a different language icon from the language icon control, **Then** the preview updates to show the selected icon in place of the auto-detected one.
+8. **Given** a rendered card preview, **When** the user toggles any of the field-visibility controls (name, owner, language, stars, forks, issues, pull requests, description) off, **Then** the preview updates immediately to omit that field, and toggling it back on restores it.
 
 ---
 
@@ -79,6 +82,9 @@ A user takes their customized (or default) card and obtains either a stable embe
 - What happens when the repo name/description contains very long text? → Card layout truncates or wraps text gracefully rather than overflowing the card bounds.
 - What happens when the repo name/description contains non-Latin characters (CJK, Arabic, etc.)? → System renders a best-effort result using the rendering library's default text support; imperfect shaping/RTL handling is acceptable in v1 (full correctness is deferred post-v1 per the roadmap), but the card MUST still render — never blank or broken — for this case.
 - What happens when the same repo URL is requested with two different customization configs simultaneously? → Each is treated as an independent, shareable configuration; no state is shared or overwritten between them.
+- What happens when a user hides every stat-type field (stars, forks, issues, pull requests) but leaves name/description visible? → Card renders without a stats row at all, never an empty/placeholder row.
+- What happens when a user toggles the language field on but the repo has no detected primary language and no manual icon override is set? → The language field is omitted, consistent with the existing no-language-detected behavior, regardless of the toggle.
+- What happens when a pasted logo URL or data URI is unreachable, malformed, or not a supported image type? → System rejects it with a clear error and retains the prior logo state, the same handling contract as an invalid file upload (FR-006).
 
 ## Requirements *(mandatory)*
 
@@ -100,10 +106,13 @@ A user takes their customized (or default) card and obtains either a stable embe
 - **FR-012**: System MUST show a clear placeholder state (not a blank or visibly broken layout) for a repo whose stats have never been successfully fetched.
 - **FR-013**: System MUST require no sign-in, account creation, or login at any point in the core flow.
 - **FR-014**: System MUST reject and show a clear, friendly error for invalid, malformed, private, or nonexistent repository URLs without crashing or rendering a broken card.
+- **FR-015**: System MUST allow the user to set the card's logo by pasting a direct image URL or a data URI, as an alternative to uploading a file (FR-006); invalid, unreachable, or non-image values MUST be rejected with a clear error, retaining the prior logo state.
+- **FR-016**: System MUST display a visual language icon on the card for the repo's detected primary language, with a user-facing control to override which language icon is shown; if no primary language is detected and no override is set, the language field MUST be omitted rather than showing a blank or placeholder icon.
+- **FR-017**: System MUST allow the user to independently show or hide each of the following card fields: name, owner, primary language, stars, forks, open issues, open pull requests, and description; the preview MUST reflect each visibility change immediately, and hiding all stat-type fields MUST remove the stats row entirely rather than leaving empty space.
 
 ### Key Entities
 
-- **Repo Card Configuration**: The full set of inputs needed to render a card — target repo (canonical lowercase `owner/repo`, normalized per FR-001), theme, font, background pattern, layout template, optional logo reference, optional description override. Fully represented in a shareable URL; not persisted server-side.
+- **Repo Card Configuration**: The full set of inputs needed to render a card — target repo (canonical lowercase `owner/repo`, normalized per FR-001), theme, font, background pattern, layout template, optional logo reference (uploaded file or directly pasted URL/data URI, per FR-015), optional language icon override, optional description override, and per-field visibility settings for name, owner, language, stars, forks, issues, pull requests, and description (FR-017). Fully represented in a shareable URL; not persisted server-side.
 - **Repo Stats Snapshot**: The cached result of a GitHub API fetch for a given repo — stars, forks, open issues, primary language, open pull requests, fetch timestamp, and success/failure state. Used to serve last-known-good data when a live fetch fails.
 
 ## Success Criteria *(mandatory)*
@@ -123,3 +132,5 @@ A user takes their customized (or default) card and obtains either a stable embe
 - Logo upload is stored only as part of the shareable configuration mechanism (e.g., encoded reference or transient asset), not as a persistent user account asset, consistent with the no-accounts principle.
 - The short-TTL cache (10–15 minutes per PRD §4) is acceptable staleness for stats; users embedding a live link understand stats are near-real-time, not instantaneous.
 - Rate limits on the public GitHub API are handled by the caching layer described in FR-011/FR-012 and are not separately exposed to the end user as a distinct error type beyond the existing placeholder/last-known-good behavior.
+- All per-field visibility toggles (FR-017) default to visible (on), matching today's always-shown behavior; a shared URL with no visibility params reproduces the current default card exactly, preserving SC-005 for existing links.
+- The language icon set (FR-016) covers a curated list of common languages; an unrecognized language falls back to no icon (text label only, current behavior) rather than a generic/broken icon glyph.

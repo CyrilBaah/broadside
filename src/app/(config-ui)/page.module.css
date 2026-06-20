@@ -1,0 +1,380 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Landing is a deliberate, scoped departure from the product register's
+   restrained light/dark theme: a fixed dark "stage" moment independent of
+   the tool's own theme toggle (which only governs the editor below). */
+.page[data-stage="editor"] {
+  background:
+    radial-gradient(1100px 700px at 12% -10%, oklch(80% 0.05 var(--hue-ink) / 0.5), transparent 60%),
+    var(--bg);
+}
+
+.page[data-stage="landing"] {
+  --bg: oklch(10% 0.014 var(--hue-ink));
+  --surface: oklch(15% 0.018 var(--hue-ink));
+  --surface-2: oklch(19% 0.02 var(--hue-ink));
+  --border: oklch(27% 0.022 var(--hue-ink));
+  --border-strong: oklch(34% 0.026 var(--hue-ink));
+  --ink: oklch(96% 0.006 var(--hue-ink));
+  --ink-muted: oklch(80% 0.014 var(--hue-ink));
+  --ink-faint: oklch(64% 0.017 var(--hue-ink));
+  --accent: oklch(66% 0.19 var(--hue-ink));
+  --accent-strong: oklch(73% 0.17 var(--hue-ink));
+  --accent-on: oklch(13% 0.012 var(--hue-ink));
+  --danger: oklch(70% 0.16 22);
+  color-scheme: dark;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.stageGlow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      560px 420px at 50% 30%,
+      oklch(58% 0.2 var(--hue-ink) / 0.35),
+      transparent 70%
+    ),
+    radial-gradient(900px 600px at 85% 90%, oklch(50% 0.18 var(--hue-ink) / 0.14), transparent 70%),
+    repeating-linear-gradient(
+      0deg,
+      oklch(100% 0 0 / 0.025) 0px,
+      oklch(100% 0 0 / 0.025) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  animation: stage-breathe 10s var(--ease-out-quart) infinite;
+}
+
+@keyframes stage-breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-6) var(--space-6) 0;
+  max-width: 1240px;
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.logoMark {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background: var(--accent);
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: var(--space-12) var(--space-6) var(--space-24);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  position: relative;
+  z-index: 1;
+}
+
+.page[data-stage="landing"] .main {
+  flex: 1;
+  justify-content: center;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  text-align: center;
+  max-width: 46ch;
+  margin: var(--space-12) auto;
+  animation: intro-rise 700ms var(--ease-out-quart) both;
+}
+
+@keyframes intro-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.title {
+  font-size: clamp(2.5rem, 1.5rem + 3vw, 4.25rem);
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.subtitle {
+  font-size: var(--text-base);
+  color: var(--ink-muted);
+  max-width: 38ch;
+}
+
+.form {
+  display: flex;
+  gap: var(--space-3);
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+.inputRow {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  transition: border-color var(--duration-fast) var(--ease-out-quart);
+}
+
+.inputRow:hover {
+  border-color: var(--border-strong);
+}
+
+.inputRow:has(.input:focus-visible) {
+  border-color: var(--accent);
+}
+
+.inputRow[data-invalid] {
+  border-color: var(--danger);
+}
+
+.inputIcon {
+  flex-shrink: 0;
+  color: var(--ink-faint);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-3) 0;
+  font-size: var(--text-base);
+  font-family: var(--font-mono);
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--ink);
+}
+
+.input::placeholder {
+  color: var(--ink-faint);
+}
+
+.submit {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--accent-on);
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color var(--duration-fast) var(--ease-out-quart),
+    transform var(--duration-fast) var(--ease-out-quart);
+}
+
+.submit:hover {
+  background: var(--accent-strong);
+}
+
+.submit:active {
+  transform: scale(0.97);
+}
+
+/* Deliberately not flex: as a flex item of `.intro` this would be blockified
+   (CSS Display §2.7) and, once the message wraps to multiple lines, shrink-to-fit
+   collapses to the full container width — leaving the icon pinned at the row's
+   start instead of centered with the text. Plain inline flow + text-align avoids it. */
+.error {
+  font-size: var(--text-sm);
+  color: var(--danger);
+  text-align: center;
+}
+
+.error svg {
+  display: inline-block;
+  vertical-align: -2px;
+  margin-right: var(--space-2);
+}
+
+.placeholder {
+  text-align: center;
+  color: var(--ink-faint);
+  font-size: var(--text-sm);
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  grid-template-rows: auto auto;
+  column-gap: var(--space-8);
+  row-gap: var(--space-6);
+  align-items: start;
+  animation: rise var(--duration-slow) var(--ease-out-quart) both;
+}
+
+.previewArea {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+}
+
+.exportArea {
+  grid-column: 1;
+  grid-row: 2;
+  min-width: 0;
+}
+
+.optionsPanel {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.optionsHeading {
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace,
+  .intro {
+    animation: none;
+  }
+
+  .stageGlow {
+    animation: none;
+  }
+
+  .input,
+  .submit,
+  .inputRow {
+    transition: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .workspace {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+  }
+
+  .previewArea {
+    grid-column: 1;
+    grid-row: auto;
+    order: 1;
+  }
+
+  .optionsPanel {
+    grid-column: 1;
+    grid-row: auto;
+    order: 2;
+  }
+
+  .exportArea {
+    grid-column: 1;
+    grid-row: auto;
+    order: 3;
+  }
+}
+
+@media (max-width: 640px) {
+  .title {
+    font-size: clamp(2rem, 1.5rem + 4vw, 2.75rem);
+  }
+
+  .form {
+    flex-direction: column;
+  }
+
+  .submit {
+    justify-content: center;
+  }
+
+  .header {
+    padding: var(--space-4) var(--space-4) 0;
+  }
+
+  .main {
+    padding: var(--space-8) var(--space-4) var(--space-16);
+    gap: var(--space-12);
+  }
+
+  .intro {
+    margin: var(--space-4) auto;
+  }
+
+  .optionsPanel {
+    padding: var(--space-4);
+  }
+}
