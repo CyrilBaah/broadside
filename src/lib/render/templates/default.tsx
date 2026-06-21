@@ -1,5 +1,6 @@
 import { CardMark } from "../card-mark";
 import { colorsFor } from "../colors";
+import { fontFamilyFor } from "../fonts";
 import { backgroundImageFor } from "../patterns";
 import { StatBadges } from "../stat-badges";
 import { CARD_HEIGHT, CARD_WIDTH, type TemplateProps } from "../types";
@@ -13,6 +14,7 @@ import { hasField } from "../../config/schema";
  */
 export function DefaultTemplate({ config, snapshot }: TemplateProps) {
   const colors = colorsFor(config.theme);
+  const fontFamily = fontFamilyFor(config.font);
   const backgroundImage = backgroundImageFor(config.pattern, colors.border);
   const meta = snapshot.meta ?? { name: `${config.owner}/${config.repo}`, description: null };
   const description = hasField(config, "description") ? config.descriptionOverride ?? meta.description : null;
@@ -28,7 +30,7 @@ export function DefaultTemplate({ config, snapshot }: TemplateProps) {
         width: CARD_WIDTH,
         height: CARD_HEIGHT,
         backgroundColor: colors.background,
-        fontFamily: "Inter",
+        fontFamily,
         padding: 56,
         // satori's CSS parser expects a string when this key is present at
         // all, so it's spread in conditionally rather than set to undefined.
