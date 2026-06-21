@@ -54,6 +54,12 @@ export default function ConfigUiPage() {
     }
   }
 
+  function goHome() {
+    setConfig(null);
+    setUrl("");
+    setParseError(null);
+  }
+
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
 
   return (
@@ -61,11 +67,10 @@ export default function ConfigUiPage() {
       <DriftBackdrop />
 
       <header className={styles.header}>
-        <div className={styles.wordmark}>
-          <span className={styles.logoMark} aria-hidden="true" />
-          Broadside
-        </div>
-        {config ? <ThemeToggle /> : null}
+        <button type="button" className={styles.wordmark} onClick={goHome}>
+          broadside
+        </button>
+        <ThemeToggle />
       </header>
 
       <main className={styles.main}>
