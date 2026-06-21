@@ -17,6 +17,20 @@ import { InvalidRepoUrlError, parseRepoUrl } from "@/lib/config/parse-repo-url";
 import { defaultConfigFor, type RepoCardConfig } from "@/lib/config/schema";
 import styles from "./page.module.css";
 
+/**
+ * The hero input's resting font size (1.75rem, matching the title's display
+ * weight) is too large to fit a full pasted GitHub URL without clipping it
+ * under the icon/submit button. Shrink it as the value grows so the whole
+ * paste stays visible instead of scrolling off-screen.
+ */
+function inputFontSize(value: string): string {
+  const shrinkAfter = 16;
+  const remPerChar = 0.035;
+  const minRem = 0.85;
+  const rem = Math.max(minRem, 1.75 - Math.max(0, value.length - shrinkAfter) * remPerChar);
+  return `${rem}rem`;
+}
+
 export default function ConfigUiPage() {
   const [url, setUrl] = useState("");
   const [config, setConfig] = useState<RepoCardConfig | null>(null);
@@ -28,6 +42,7 @@ export default function ConfigUiPage() {
     try {
       const { owner, repo } = parseRepoUrl(url);
       setConfig(defaultConfigFor(owner, repo));
+      setUrl(`${owner}/${repo}`);
       setParseError(null);
     } catch (error) {
       setConfig(null);
@@ -74,6 +89,7 @@ export default function ConfigUiPage() {
                 aria-invalid={parseError ? true : undefined}
                 aria-describedby={parseError ? "url-error" : undefined}
                 className={styles.input}
+                style={{ fontSize: inputFontSize(url) }}
               />
               <button type="submit" className={styles.submit} aria-label="Generate card">
                 <Search size={22} strokeWidth={2.5} aria-hidden="true" />

@@ -207,6 +207,7 @@
   border: none;
   outline: none;
   color: var(--ink);
+  transition: font-size var(--duration-fast) var(--ease-out-quart);
 }
 
 .input::placeholder {
