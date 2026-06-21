@@ -14,17 +14,12 @@
   overflow: hidden;
 }
 
-.page[data-stage="editor"] {
-  background:
-    radial-gradient(1100px 700px at 12% -10%, oklch(80% 0.05 var(--hue-ink) / 0.5), transparent 60%),
-    var(--bg);
-}
-
-/* Landing gets its own light, sage-tinted stage (the anchor hue from the
+/* Both stages share one sage-tinted stage palette (the anchor hue from the
    mosaic palette the drifting shapes pull their colors from) rather than
-   the editor's ink-red-tinted neutrals — the CTA/logo keep --hue-ink so red
-   still reads as the one deliberate brand accent against the soft green. */
-.page[data-stage="landing"] {
+   the app's default ink-red-tinted neutrals — the CTA/logo keep --hue-ink
+   so red still reads as the one deliberate brand accent against the soft
+   green, in both landing and editor. */
+.page {
   --hue-stage: 150;
   --bg: oklch(97% 0.014 var(--hue-stage));
   --surface: oklch(94% 0.018 var(--hue-stage));
@@ -37,6 +32,18 @@
   --ink-faint: oklch(52% 0.017 var(--hue-stage));
   background: var(--bg);
   overflow: hidden;
+}
+
+[data-theme="dark"] .page {
+  --bg: oklch(11% 0.016 var(--hue-stage));
+  --surface: oklch(15% 0.02 var(--hue-stage));
+  --surface-2: oklch(20% 0.024 var(--hue-stage));
+  --raised: oklch(27% 0.018 var(--hue-stage));
+  --border: oklch(30% 0.026 var(--hue-stage));
+  --border-strong: oklch(38% 0.03 var(--hue-stage));
+  --ink: oklch(94% 0.01 var(--hue-stage));
+  --ink-muted: oklch(74% 0.016 var(--hue-stage));
+  --ink-faint: oklch(63% 0.018 var(--hue-stage));
 }
 
 .header {
