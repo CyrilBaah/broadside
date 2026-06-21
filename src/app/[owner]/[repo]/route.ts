@@ -2,7 +2,7 @@ import dns from "node:dns/promises";
 import { NextRequest, NextResponse } from "next/server";
 import { decodeConfig } from "@/lib/config/url-codec";
 import { isPrivateOrReservedHost, validateLogoReference } from "@/lib/config/logo-upload";
-import { IMAGE_FORMATS, type ImageFormat } from "@/lib/config/schema";
+import { IMAGE_FORMATS, type ImageFormat, type Theme } from "@/lib/config/schema";
 import { getRepoStatsSnapshot, peekRepoStatsSnapshot } from "@/lib/cache/repo-stats-cache";
 import { RepoNotFoundError } from "@/lib/github/stats";
 import { contentTypeFor, exportImage } from "@/lib/render/export-image";
@@ -130,7 +130,7 @@ function clientIp(request: NextRequest): string {
  */
 async function errorImageResponse(
   message: string,
-  options?: { config?: { theme: "light" | "dark" } },
+  options?: { config?: { theme: Theme } },
 ) {
   const theme = options?.config?.theme ?? "light";
   const svg = await renderErrorCardToSvg(message, theme);

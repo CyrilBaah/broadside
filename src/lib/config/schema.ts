@@ -1,4 +1,4 @@
-export type Theme = "light" | "dark";
+export type Theme = "light" | "dark" | "dimmed" | "high-contrast";
 export type Pattern = "none" | "dots" | "grid" | "circuit";
 export type Template = "default" | "minimal" | "stats-forward";
 export type ImageFormat = "png" | "jpeg" | "webp";
@@ -12,7 +12,7 @@ export type FieldKey =
   | "pullRequests"
   | "description";
 
-export const THEMES: readonly Theme[] = ["light", "dark"];
+export const THEMES: readonly Theme[] = ["light", "dark", "dimmed", "high-contrast"];
 export const PATTERNS: readonly Pattern[] = ["none", "dots", "grid", "circuit"];
 export const TEMPLATES: readonly Template[] = ["default", "minimal", "stats-forward"];
 export const IMAGE_FORMATS: readonly ImageFormat[] = ["png", "jpeg", "webp"];
@@ -30,7 +30,7 @@ export const FIELD_KEYS: readonly FieldKey[] = [
 
 export const DEFAULT_THEME: Theme = "light";
 export const DEFAULT_PATTERN: Pattern = "none";
-export const DEFAULT_TEMPLATE: Template = "default";
+export const DEFAULT_TEMPLATE: Template = "minimal";
 export const DEFAULT_FORMAT: ImageFormat = "png";
 export const DEFAULT_FONT = "system";
 export const DEFAULT_VISIBLE_FIELDS: readonly FieldKey[] = ["name", "owner", "language", "stars"];
