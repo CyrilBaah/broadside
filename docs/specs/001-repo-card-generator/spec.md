@@ -17,6 +17,12 @@
 - Q: What are the concrete size/type limits for logo uploads (spec previously said only "oversized" or "non-image" without numbers)? → A: 2MB maximum, restricted to PNG, JPEG, WebP, and SVG.
 - Q: Should varying forms of the same GitHub repo URL (trailing slash, `.git` suffix, mixed case, with/without protocol) be normalized to one canonical form before use as a cache key / shareable config URL? → A: Yes — normalize to lowercase `owner/repo`, stripping protocol, trailing slash, and `.git` suffix, so equivalent URLs always map to the same cache entry and shareable config.
 
+### Session 2026-06-20
+
+- Q: FR-015 lets a user paste an arbitrary image URL, which the server fetches at render time. What's the validation posture for URLs targeting internal/private network addresses (SSRF risk)? → A: Block non-http(s) schemes and private/internal/loopback/link-local IP ranges before fetching, rejecting with the same clear-error contract as FR-006/FR-015.
+- Q: The image endpoint is fully public and unauthenticated (no accounts, per FR-013); spec.md's Assumptions only addressed GitHub-side rate limits (FR-003a), not abuse of Broadside's own endpoint. What's the posture? → A: Apply a per-IP rate limit at the edge; a client over the limit still gets a usable (cached/placeholder) response, never a hard error, so existing embeds never break.
+- Q: Spec.md had no accessibility requirement at all, even though the implemented UI already follows WCAG-style conventions (focus-visible states, aria labels). Should the spec codify a baseline? → A: Yes — add an explicit success criterion that all customization controls meet WCAG AA contrast and are fully keyboard-operable.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Generate a card from a repo URL (Priority: P1)
@@ -85,6 +91,8 @@ A user takes their customized (or default) card and obtains either a stable embe
 - What happens when a user hides every stat-type field (stars, forks, issues, pull requests) but leaves name/description visible? → Card renders without a stats row at all, never an empty/placeholder row.
 - What happens when a user toggles the language field on but the repo has no detected primary language and no manual icon override is set? → The language field is omitted, consistent with the existing no-language-detected behavior, regardless of the toggle.
 - What happens when a pasted logo URL or data URI is unreachable, malformed, or not a supported image type? → System rejects it with a clear error and retains the prior logo state, the same handling contract as an invalid file upload (FR-006).
+- What happens when a pasted logo URL resolves to a private, internal, loopback, or link-local network address, or uses a non-http(s) scheme? → System rejects it before fetching, with the same clear error and prior-logo-retained behavior as any other invalid pasted logo value (SSRF protection, clarified 2026-06-20).
+- What happens when a single client (by IP) exceeds the per-IP rate limit on the image endpoint? → System still serves a usable response (last-known-good cached stats or placeholder) rather than an error, so existing embeds elsewhere keep working (clarified 2026-06-20).
 
 ## Requirements *(mandatory)*
 
@@ -106,9 +114,10 @@ A user takes their customized (or default) card and obtains either a stable embe
 - **FR-012**: System MUST show a clear placeholder state (not a blank or visibly broken layout) for a repo whose stats have never been successfully fetched.
 - **FR-013**: System MUST require no sign-in, account creation, or login at any point in the core flow.
 - **FR-014**: System MUST reject and show a clear, friendly error for invalid, malformed, private, or nonexistent repository URLs without crashing or rendering a broken card.
-- **FR-015**: System MUST allow the user to set the card's logo by pasting a direct image URL or a data URI, as an alternative to uploading a file (FR-006); invalid, unreachable, or non-image values MUST be rejected with a clear error, retaining the prior logo state.
+- **FR-015**: System MUST allow the user to set the card's logo by pasting a direct image URL or a data URI, as an alternative to uploading a file (FR-006); invalid, unreachable, or non-image values MUST be rejected with a clear error, retaining the prior logo state. A pasted URL MUST be rejected before the server fetches it if it uses a non-http(s) scheme or resolves to a private, internal, loopback, or link-local network address (SSRF protection, clarified 2026-06-20), using the same clear-error contract.
 - **FR-016**: System MUST display a visual language icon on the card for the repo's detected primary language, with a user-facing control to override which language icon is shown; if no primary language is detected and no override is set, the language field MUST be omitted rather than showing a blank or placeholder icon.
 - **FR-017**: System MUST allow the user to independently show or hide each of the following card fields: name, owner, primary language, stars, forks, open issues, open pull requests, and description; the preview MUST reflect each visibility change immediately, and hiding all stat-type fields MUST remove the stats row entirely rather than leaving empty space.
+- **FR-018**: System MUST apply a per-IP rate limit at the edge to the image-generation endpoint, since it is fully public and unauthenticated (FR-013); a client exceeding the limit MUST still receive a usable response (last-known-good cached stats or the existing placeholder, per FR-011/FR-012) rather than a hard error, so that embeds already placed elsewhere (e.g. in a README) never break (clarified 2026-06-20).
 
 ### Key Entities
 
@@ -124,6 +133,7 @@ A user takes their customized (or default) card and obtains either a stable embe
 - **SC-003**: No user-visible card, whether freshly generated or loaded from a previously shared live link, ever displays a blank or visibly broken stats badge — it is always either current data, last-known-good data, or a clear placeholder.
 - **SC-004**: Zero points in the core flow (preview, customize, export) require the user to sign in, register, or provide any personal account information.
 - **SC-005**: A shared card configuration URL reproduces an identical card for any visitor who opens it, with no loss of customization detail.
+- **SC-006**: All customization controls (repo input, theme/font/pattern/template selectors, logo/language-icon controls, field-visibility toggles, export actions) meet WCAG AA contrast and are fully operable by keyboard alone, with visible focus states (clarified 2026-06-20).
 
 ## Assumptions
 
@@ -132,5 +142,6 @@ A user takes their customized (or default) card and obtains either a stable embe
 - Logo upload is stored only as part of the shareable configuration mechanism (e.g., encoded reference or transient asset), not as a persistent user account asset, consistent with the no-accounts principle.
 - The short-TTL cache (10–15 minutes per PRD §4) is acceptable staleness for stats; users embedding a live link understand stats are near-real-time, not instantaneous.
 - Rate limits on the public GitHub API are handled by the caching layer described in FR-011/FR-012 and are not separately exposed to the end user as a distinct error type beyond the existing placeholder/last-known-good behavior.
+- Abuse of Broadside's own public, unauthenticated image endpoint (distinct from GitHub-side limits above) is bounded by a per-IP rate limit at the edge (FR-018); exact thresholds are an implementation/ops detail, not a design-time blocker.
 - All per-field visibility toggles (FR-017) default to visible (on), matching today's always-shown behavior; a shared URL with no visibility params reproduces the current default card exactly, preserving SC-005 for existing links.
 - The language icon set (FR-016) covers a curated list of common languages; an unrecognized language falls back to no icon (text label only, current behavior) rather than a generic/broken icon glyph.
