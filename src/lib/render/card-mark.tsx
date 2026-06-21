@@ -31,11 +31,14 @@ export function CardMark({ config, snapshot, colors, size }: CardMarkProps) {
     : languageIconFor(snapshot.stats?.primaryLanguage ?? null);
 
   if (icon) {
-    const glyphSize = Math.round(size * 0.82);
+    // Slightly larger than the logo/placeholder cases below: two glyphs side
+    // by side read smaller than a single filled box at the same bounding
+    // size, so the combo needs a bump to feel equally prominent.
+    const glyphSize = Math.round(size * 0.95);
     return (
-      <div style={{ display: "flex", alignItems: "center", gap: size * 0.14 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: size * 0.16 }}>
         <LanguageIconGlyph path={GITHUB_MARK_PATH} size={glyphSize} color={colors.text} />
-        <span style={{ fontSize: size * 0.5, fontWeight: 300, color: colors.subtext }}>+</span>
+        <span style={{ fontSize: size * 0.55, fontWeight: 300, color: colors.subtext }}>+</span>
         <LanguageIconGlyph path={icon.path} size={glyphSize} color={`#${icon.hex}`} />
       </div>
     );
