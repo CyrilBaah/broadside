@@ -53,33 +53,13 @@
   color: var(--ink-faint);
 }
 
-.submit {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: 26px;
-  height: 26px;
-  padding: 0;
-  color: var(--accent-on);
-  background: var(--accent);
-  border: none;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: background-color var(--duration-fast) var(--ease-out-quart);
-}
-
-.submit:hover {
-  background: var(--accent-strong);
-}
-
 .error {
   font-size: var(--text-xs);
   color: var(--danger);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .row,
-  .submit {
+  .row {
     transition: none;
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
-import { ArrowRight, GitFork } from "lucide-react";
 import { useId, type FormEvent } from "react";
+import { GithubIcon } from "@/components/icons/GithubIcon";
 import styles from "./RepoField.module.css";
 
 export interface RepoFieldProps {
@@ -27,7 +27,7 @@ export function RepoField({ value, onChange, onSubmit, error }: RepoFieldProps) 
         Repository
       </label>
       <form onSubmit={onSubmit} className={styles.row} data-invalid={error ? true : undefined}>
-        <GitFork size={15} strokeWidth={2} className={styles.icon} aria-hidden="true" />
+        <GithubIcon size={15} className={styles.icon} />
         <input
           id={id}
           type="text"
@@ -39,9 +39,6 @@ export function RepoField({ value, onChange, onSubmit, error }: RepoFieldProps) 
           aria-describedby={error ? errorId : undefined}
           className={styles.input}
         />
-        <button type="submit" className={styles.submit} aria-label="Update repository">
-          <ArrowRight size={14} strokeWidth={2.25} aria-hidden="true" />
-        </button>
       </form>
       {error ? (
         <p id={errorId} role="alert" className={styles.error}>
