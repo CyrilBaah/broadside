@@ -1,0 +1,114 @@
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.shape {
+  position: absolute;
+  border-radius: var(--radius-sm);
+  will-change: transform;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.kfA {
+  animation-name: drift-a;
+}
+
+.kfB {
+  animation-name: drift-b;
+}
+
+.kfC {
+  animation-name: drift-c;
+}
+
+.kfD {
+  animation-name: drift-d;
+}
+
+/* diamond: outer handles position/drift, inner handles the static 45deg
+   turn so it doesn't fight the drift keyframes, which also set `transform`
+   and would overwrite a static rotate placed on the same element. */
+.diamondInner {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-sm);
+  transform: rotate(45deg);
+}
+
+/* Each loop returns to its start so the motion reads as continuous flow
+   rather than a ping-pong snap at the ends of an alternating animation. */
+@keyframes drift-a {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(22px, -16px) rotate(4deg);
+  }
+  50% {
+    transform: translate(6px, 14px) rotate(-3deg);
+  }
+  75% {
+    transform: translate(-18px, -6px) rotate(5deg);
+  }
+}
+
+@keyframes drift-b {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  30% {
+    transform: translate(-20px, -22px) rotate(-4deg);
+  }
+  60% {
+    transform: translate(-8px, 16px) rotate(2deg);
+  }
+  85% {
+    transform: translate(16px, -4px) rotate(-2deg);
+  }
+}
+
+@keyframes drift-c {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  40% {
+    transform: translate(-16px, 18px) scale(1.08);
+  }
+  70% {
+    transform: translate(14px, 8px) scale(0.96);
+  }
+}
+
+@keyframes drift-d {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  35% {
+    transform: translate(18px, -14px) rotate(3deg);
+  }
+  65% {
+    transform: translate(-10px, -8px) rotate(-3deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .hideOnMobile {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shape {
+    animation: none;
+  }
+}
