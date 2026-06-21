@@ -12,41 +12,58 @@ export interface StatBadgesProps {
   emphasized?: boolean;
 }
 
+/** Per-metric accent, after Socialify's color-coded stat pills (aa.md reference). */
+const ACCENT_COLORS = {
+  stars: "#dfb317",
+  forks: "#97ca00",
+  issues: "#2188ff",
+  pullRequests: "#fe7d37",
+  language: "#8957e5",
+} as const;
+
 function Badge({
   label,
   value,
   colors,
+  accent,
   emphasized,
 }: {
   label: string;
   value: string;
   colors: ThemeColors;
+  accent: string;
   emphasized?: boolean;
 }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: colors.surface,
-        border: `1px solid ${colors.border}`,
-        borderRadius: 12,
-        padding: emphasized ? "20px 28px" : "12px 18px",
-        minWidth: emphasized ? 140 : 100,
-      }}
-    >
+    <div style={{ display: "flex", borderRadius: emphasized ? 10 : 8, overflow: "hidden" }}>
       <div
         style={{
-          fontSize: emphasized ? 36 : 22,
+          display: "flex",
+          alignItems: "center",
+          backgroundColor: colors.statLabelBg,
+          color: colors.statLabelText,
+          fontSize: emphasized ? 18 : 13,
+          fontWeight: 600,
+          letterSpacing: 1,
+          padding: emphasized ? "14px 20px" : "8px 14px",
+          textTransform: "uppercase",
+        }}
+      >
+        {label}
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          backgroundColor: accent,
+          color: "#ffffff",
+          fontSize: emphasized ? 20 : 15,
           fontWeight: 700,
-          color: colors.text,
+          padding: emphasized ? "14px 20px" : "8px 14px",
         }}
       >
         {value}
       </div>
-      <div style={{ fontSize: emphasized ? 16 : 13, color: colors.subtext }}>{label}</div>
     </div>
   );
 }
@@ -56,12 +73,26 @@ export function StatBadges({ stats, colors, fields, emphasized }: StatBadgesProp
   const badges: ReactNode[] = [];
   if (fields.includes("stars")) {
     badges.push(
-      <Badge key="stars" label="Stars" value={formatCount(stats.stars)} colors={colors} emphasized={emphasized} />,
+      <Badge
+        key="stars"
+        label="Stars"
+        value={formatCount(stats.stars)}
+        colors={colors}
+        accent={ACCENT_COLORS.stars}
+        emphasized={emphasized}
+      />,
     );
   }
   if (fields.includes("forks")) {
     badges.push(
-      <Badge key="forks" label="Forks" value={formatCount(stats.forks)} colors={colors} emphasized={emphasized} />,
+      <Badge
+        key="forks"
+        label="Forks"
+        value={formatCount(stats.forks)}
+        colors={colors}
+        accent={ACCENT_COLORS.forks}
+        emphasized={emphasized}
+      />,
     );
   }
   if (fields.includes("issues")) {
@@ -71,6 +102,7 @@ export function StatBadges({ stats, colors, fields, emphasized }: StatBadgesProp
         label="Issues"
         value={formatCount(stats.openIssues)}
         colors={colors}
+        accent={ACCENT_COLORS.issues}
         emphasized={emphasized}
       />,
     );
@@ -79,9 +111,10 @@ export function StatBadges({ stats, colors, fields, emphasized }: StatBadgesProp
     badges.push(
       <Badge
         key="pullRequests"
-        label="PRs"
+        label="Pulls"
         value={formatCount(stats.openPullRequests)}
         colors={colors}
+        accent={ACCENT_COLORS.pullRequests}
         emphasized={emphasized}
       />,
     );
@@ -93,6 +126,7 @@ export function StatBadges({ stats, colors, fields, emphasized }: StatBadgesProp
         label="Language"
         value={stats.primaryLanguage}
         colors={colors}
+        accent={ACCENT_COLORS.language}
         emphasized={emphasized}
       />,
     );
@@ -100,7 +134,7 @@ export function StatBadges({ stats, colors, fields, emphasized }: StatBadgesProp
 
   if (badges.length === 0) return null;
 
-  return <div style={{ display: "flex", gap: emphasized ? 20 : 12 }}>{badges}</div>;
+  return <div style={{ display: "flex", gap: emphasized ? 14 : 10 }}>{badges}</div>;
 }
 
 function formatCount(n: number): string {
