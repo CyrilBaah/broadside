@@ -12,13 +12,23 @@ export interface StatBadgesProps {
   emphasized?: boolean;
 }
 
-/** Per-metric accent, after Socialify's color-coded stat pills (aa.md reference). */
+/**
+ * Per-metric accent. Each stop holds the same OKLCH lightness/chroma so the
+ * set reads as one designed family rather than five unrelated hues borrowed
+ * wholesale from a competitor, and so the fixed white badge value-text gets
+ * consistent, AA-safe contrast (~5:1) against every one of them. Hues are
+ * spread well clear of the brand's own ink-red (hue 25, see colors.ts) so a
+ * stat pill is never mistaken for the brand mark.
+ *
+ * Values are precomputed sRGB hex, not oklch(): see the note in colors.ts —
+ * resvg doesn't parse CSS Color 4 functions.
+ */
 const ACCENT_COLORS = {
-  stars: "#dfb317",
-  forks: "#97ca00",
-  issues: "#2188ff",
-  pullRequests: "#fe7d37",
-  language: "#8957e5",
+  stars: "#8c6a00", // oklch(54% 0.16 95)
+  forks: "#118226", // oklch(53% 0.16 145)
+  issues: "#0075b2", // oklch(52% 0.16 230)
+  pullRequests: "#8459c3", // oklch(56% 0.16 300)
+  language: "#007d77", // oklch(50% 0.16 190)
 } as const;
 
 function Badge({
