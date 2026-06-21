@@ -5,6 +5,15 @@
   position: relative;
 }
 
+/* The editor is a single-screen tool: every control and the export snippets
+   should be visible at once on a standard laptop viewport, with no page
+   scroll. (The breakpoints below progressively densify for shorter viewports
+   rather than letting the page grow past it.) */
+.page[data-stage="editor"] {
+  height: 100vh;
+  overflow: hidden;
+}
+
 /* Landing is a deliberate, scoped departure from the product register's
    restrained light/dark theme: a fixed dark "stage" moment independent of
    the tool's own theme toggle (which only governs the editor below). */
@@ -74,6 +83,11 @@
   margin: 0 auto;
   position: relative;
   z-index: 1;
+  flex-shrink: 0;
+}
+
+.page[data-stage="editor"] .header {
+  padding: var(--space-3) var(--space-6) 0;
 }
 
 .wordmark {
@@ -95,6 +109,7 @@
 
 .main {
   flex: 1;
+  min-height: 0;
   width: 100%;
   max-width: 1240px;
   margin: 0 auto;
@@ -111,6 +126,11 @@
   justify-content: center;
   padding-top: 0;
   padding-bottom: 0;
+}
+
+.page[data-stage="editor"] .main {
+  padding: var(--space-4) var(--space-6);
+  gap: var(--space-4);
 }
 
 .intro {
@@ -250,39 +270,50 @@
   font-size: var(--text-sm);
 }
 
+/* Flex, not grid: a 2-row grid with optionsPanel spanning both rows lets
+   the grid's row auto-sizing distribute its height across both tracks,
+   which inflated the gap above .exportArea by ~190px. Flex sizes each
+   column purely from its own content, so the export panel sits right
+   under the preview. */
 .workspace {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 380px;
-  grid-template-rows: auto auto;
-  column-gap: var(--space-8);
-  row-gap: var(--space-6);
-  align-items: start;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-6);
+  min-height: 0;
+  flex: 1;
   animation: rise var(--duration-slow) var(--ease-out-quart) both;
 }
 
+.previewColumn {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
 .previewArea {
-  grid-column: 1;
-  grid-row: 1;
   min-width: 0;
 }
 
 .exportArea {
-  grid-column: 1;
-  grid-row: 2;
   min-width: 0;
 }
 
 .optionsPanel {
-  grid-column: 2;
-  grid-row: 1 / span 2;
+  flex: 0 0 340px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
-  padding: var(--space-6);
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
+  line-height: 1.3;
+  max-height: 100%;
+  overflow-y: auto;
 }
 
 .optionsHeading {
@@ -324,27 +355,28 @@
 }
 
 @media (max-width: 900px) {
-  .workspace {
-    grid-template-columns: 1fr;
-    grid-template-rows: none;
+  /* Below the laptop breakpoint the one-screen constraint relaxes — natural
+     page scroll is the expected (and more readable) mobile/tablet behavior. */
+  .page[data-stage="editor"] {
+    height: auto;
+    overflow: visible;
   }
 
-  .previewArea {
-    grid-column: 1;
-    grid-row: auto;
+  .workspace {
+    flex-direction: column;
+  }
+
+  .previewColumn {
+    width: 100%;
     order: 1;
   }
 
   .optionsPanel {
-    grid-column: 1;
-    grid-row: auto;
+    flex: 1 1 auto;
+    width: 100%;
     order: 2;
-  }
-
-  .exportArea {
-    grid-column: 1;
-    grid-row: auto;
-    order: 3;
+    max-height: none;
+    overflow-y: visible;
   }
 }
 

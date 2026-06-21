@@ -90,8 +90,14 @@ export default function ConfigUiPage() {
 
         {config ? (
           <section className={styles.workspace} aria-label="Card preview and customization">
-            <div className={styles.previewArea}>
-              <CardPreview config={config} />
+            <div className={styles.previewColumn}>
+              <div className={styles.previewArea}>
+                <CardPreview config={config} />
+              </div>
+
+              <div className={styles.exportArea}>
+                <ExportPanel config={config} baseUrl={baseUrl} />
+              </div>
             </div>
 
             <div className={styles.optionsPanel}>
@@ -127,10 +133,6 @@ export default function ConfigUiPage() {
                   setConfig({ ...config, descriptionOverride: descriptionOverride || undefined })
                 }
               />
-            </div>
-
-            <div className={styles.exportArea}>
-              <ExportPanel config={config} baseUrl={baseUrl} />
             </div>
           </section>
         ) : !parseError ? (
