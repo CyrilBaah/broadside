@@ -14,63 +14,29 @@
   overflow: hidden;
 }
 
-/* Landing is a deliberate, scoped departure from the product register's
-   restrained light/dark theme: a fixed dark "stage" moment independent of
-   the tool's own theme toggle (which only governs the editor below). */
 .page[data-stage="editor"] {
   background:
     radial-gradient(1100px 700px at 12% -10%, oklch(80% 0.05 var(--hue-ink) / 0.5), transparent 60%),
     var(--bg);
 }
 
+/* Landing gets its own light, sage-tinted stage (the anchor hue from the
+   mosaic palette the drifting shapes pull their colors from) rather than
+   the editor's ink-red-tinted neutrals — the CTA/logo keep --hue-ink so red
+   still reads as the one deliberate brand accent against the soft green. */
 .page[data-stage="landing"] {
-  --bg: oklch(10% 0.014 var(--hue-ink));
-  --surface: oklch(15% 0.018 var(--hue-ink));
-  --surface-2: oklch(19% 0.02 var(--hue-ink));
-  --border: oklch(27% 0.022 var(--hue-ink));
-  --border-strong: oklch(34% 0.026 var(--hue-ink));
-  --ink: oklch(96% 0.006 var(--hue-ink));
-  --ink-muted: oklch(80% 0.014 var(--hue-ink));
-  --ink-faint: oklch(64% 0.017 var(--hue-ink));
-  --accent: oklch(52% 0.19 var(--hue-ink));
-  --accent-strong: oklch(60% 0.18 var(--hue-ink));
-  --accent-on: oklch(99% 0.004 var(--hue-ink));
-  --danger: oklch(70% 0.16 22);
-  color-scheme: dark;
+  --hue-stage: 150;
+  --bg: oklch(97% 0.014 var(--hue-stage));
+  --surface: oklch(94% 0.018 var(--hue-stage));
+  --surface-2: oklch(90% 0.022 var(--hue-stage));
+  --raised: oklch(98.5% 0.01 var(--hue-stage));
+  --border: oklch(84% 0.02 var(--hue-stage));
+  --border-strong: oklch(74% 0.024 var(--hue-stage));
+  --ink: oklch(23% 0.014 var(--hue-stage));
+  --ink-muted: oklch(42% 0.016 var(--hue-stage));
+  --ink-faint: oklch(52% 0.017 var(--hue-stage));
   background: var(--bg);
   overflow: hidden;
-}
-
-.stageGlow {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(
-      560px 420px at 50% 30%,
-      oklch(58% 0.2 var(--hue-ink) / 0.35),
-      transparent 70%
-    ),
-    radial-gradient(900px 600px at 85% 90%, oklch(50% 0.18 var(--hue-ink) / 0.14), transparent 70%),
-    repeating-linear-gradient(
-      0deg,
-      oklch(100% 0 0 / 0.025) 0px,
-      oklch(100% 0 0 / 0.025) 1px,
-      transparent 1px,
-      transparent 3px
-    );
-  animation: stage-breathe 10s var(--ease-out-quart) infinite;
-}
-
-@keyframes stage-breathe {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
-  }
 }
 
 .header {
@@ -137,9 +103,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-5);
+  gap: var(--space-8);
   text-align: center;
-  max-width: 46ch;
+  max-width: 64ch;
   margin: var(--space-12) auto;
   animation: intro-rise 700ms var(--ease-out-quart) both;
 }
@@ -156,61 +122,79 @@
 }
 
 .title {
-  font-size: clamp(2.5rem, 1.5rem + 3vw, 4.25rem);
-  letter-spacing: -0.025em;
-  line-height: 1.05;
+  font-family: var(--font-script);
+  font-size: clamp(4rem, 2.75rem + 6vw, 6.5rem);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.1;
   color: var(--ink);
   text-wrap: balance;
 }
 
-.subtitle {
-  font-size: var(--text-base);
-  color: var(--ink-muted);
-  max-width: 38ch;
+.rule {
+  width: 64px;
+  height: 3px;
+  background: var(--accent);
+  border-radius: var(--radius-full);
 }
 
+.subtitle {
+  font-family: var(--font-script);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ink-muted);
+  max-width: 46ch;
+}
+
+/* A single fused control rather than a pill input + a separate floating
+   button — the submit button sits inset inside the same bar so the whole
+   thing reads as one decisive instrument, not two stacked controls. */
 .form {
   display: flex;
-  gap: var(--space-3);
-  width: 100%;
-  margin-top: var(--space-2);
-}
-
-.inputRow {
-  flex: 1;
-  min-width: 0;
-  display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: 0 var(--space-4);
-  background: var(--surface);
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 42rem;
+  margin-top: var(--space-2);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-6);
+  background: var(--raised);
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
-  transition: border-color var(--duration-fast) var(--ease-out-quart);
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color var(--duration-fast) var(--ease-out-quart),
+    box-shadow var(--duration-fast) var(--ease-out-quart);
 }
 
-.inputRow:hover {
+.form:hover {
   border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
 }
 
-.inputRow:has(.input:focus-visible) {
+.form:has(.input:focus-visible) {
   border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-wash), var(--shadow-md);
 }
 
-.inputRow[data-invalid] {
+.form[data-invalid] {
   border-color: var(--danger);
 }
 
 .inputIcon {
   flex-shrink: 0;
   color: var(--ink-faint);
+  transition: color var(--duration-fast) var(--ease-out-quart);
+}
+
+.form:has(.input:focus-visible) .inputIcon {
+  color: var(--accent);
 }
 
 .input {
   flex: 1;
   min-width: 0;
-  padding: var(--space-3) 0;
-  font-size: var(--text-base);
+  padding: var(--space-4) 0;
+  font-size: var(--text-xl);
   font-family: var(--font-mono);
   background: transparent;
   border: none;
@@ -223,18 +207,17 @@
 }
 
 .submit {
-  display: inline-flex;
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-5);
-  font-size: var(--text-base);
-  font-weight: 600;
+  justify-content: center;
   color: var(--accent-on);
   background: var(--accent);
   border: none;
   border-radius: var(--radius-full);
   cursor: pointer;
-  white-space: nowrap;
   transition:
     background-color var(--duration-fast) var(--ease-out-quart),
     transform var(--duration-fast) var(--ease-out-quart);
@@ -245,7 +228,7 @@
 }
 
 .submit:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
 /* Deliberately not flex: as a flex item of `.intro` this would be blockified
@@ -262,12 +245,6 @@
   display: inline-block;
   vertical-align: -2px;
   margin-right: var(--space-2);
-}
-
-.placeholder {
-  text-align: center;
-  color: var(--ink-faint);
-  font-size: var(--text-sm);
 }
 
 /* Flex, not grid: a 2-row grid with optionsPanel spanning both rows lets
@@ -343,13 +320,10 @@
     animation: none;
   }
 
-  .stageGlow {
-    animation: none;
-  }
-
   .input,
   .submit,
-  .inputRow {
+  .form,
+  .inputIcon {
     transition: none;
   }
 }
@@ -382,15 +356,20 @@
 
 @media (max-width: 640px) {
   .title {
-    font-size: clamp(2rem, 1.5rem + 4vw, 2.75rem);
+    font-size: clamp(2.75rem, 2rem + 6vw, 4rem);
   }
 
   .form {
-    flex-direction: column;
+    padding-left: var(--space-4);
+  }
+
+  .input {
+    font-size: var(--text-lg);
   }
 
   .submit {
-    justify-content: center;
+    width: 50px;
+    height: 50px;
   }
 
   .header {

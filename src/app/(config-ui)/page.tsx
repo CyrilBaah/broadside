@@ -1,7 +1,9 @@
 "use client";
 
-import { AlertCircle, ArrowRight, GitFork } from "lucide-react";
+import { AlertCircle, Search } from "lucide-react";
 import { useState, type FormEvent } from "react";
+import { GithubIcon } from "@/components/icons/GithubIcon";
+import { DriftBackdrop } from "@/components/landing/DriftBackdrop";
 import { CardPreview } from "@/components/card-preview/CardPreview";
 import { CustomizationPanel } from "@/components/customization-panel/CustomizationPanel";
 import { DescriptionOverride } from "@/components/customization-panel/DescriptionOverride";
@@ -41,7 +43,7 @@ export default function ConfigUiPage() {
 
   return (
     <div className={styles.page} data-stage={config ? "editor" : "landing"}>
-      {!config ? <div className={styles.stageGlow} aria-hidden="true" /> : null}
+      <DriftBackdrop />
 
       <header className={styles.header}>
         <div className={styles.wordmark}>
@@ -55,27 +57,26 @@ export default function ConfigUiPage() {
         {!config ? (
           <section className={styles.intro}>
             <h1 className={styles.title}>Pin up your repo.</h1>
-            <p className={styles.subtitle}>
-              Paste a public GitHub repo URL to generate a shareable announcement card.
-            </p>
+            <span className={styles.rule} aria-hidden="true" />
+            <p className={styles.subtitle}>Paste a repo. Watch it become a card.</p>
 
-            <form onSubmit={handleSubmit} className={styles.form}>
-              <div className={styles.inputRow} data-invalid={parseError ? true : undefined}>
-                <GitFork size={16} strokeWidth={2} className={styles.inputIcon} aria-hidden="true" />
-                <input
-                  type="text"
-                  value={url}
-                  onChange={(event) => setUrl(event.target.value)}
-                  placeholder="github.com/owner/repo"
-                  aria-label="GitHub repo URL"
-                  aria-invalid={parseError ? true : undefined}
-                  aria-describedby={parseError ? "url-error" : undefined}
-                  className={styles.input}
-                />
-              </div>
-              <button type="submit" className={styles.submit}>
-                Generate
-                <ArrowRight size={16} strokeWidth={2.25} aria-hidden="true" />
+            <form
+              onSubmit={handleSubmit}
+              className={styles.form}
+              data-invalid={parseError ? true : undefined}
+            >
+              <GithubIcon size={22} className={styles.inputIcon} />
+              <input
+                type="text"
+                value={url}
+                onChange={(event) => setUrl(event.target.value)}
+                aria-label="GitHub repo URL"
+                aria-invalid={parseError ? true : undefined}
+                aria-describedby={parseError ? "url-error" : undefined}
+                className={styles.input}
+              />
+              <button type="submit" className={styles.submit} aria-label="Generate card">
+                <Search size={22} strokeWidth={2.5} aria-hidden="true" />
               </button>
             </form>
 
@@ -135,8 +136,6 @@ export default function ConfigUiPage() {
               />
             </div>
           </section>
-        ) : !parseError ? (
-          <p className={styles.placeholder}>Your card preview will appear here once you generate one.</p>
         ) : null}
       </main>
     </div>
