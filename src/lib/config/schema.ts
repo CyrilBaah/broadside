@@ -80,8 +80,10 @@ export interface RepoCardConfig {
   template: Template;
   /** Reference to an uploaded logo asset, if any (FR-006). */
   logo?: string;
-  /** simple-icons slug for the language-icon combo mark, if selected. Mutually exclusive with `logo`. */
+  /** simple-icons slug for the language-icon combo mark, if selected. */
   languageIcon?: string;
+  /** When true, drops the GitHub mark from the combo so only the language icon (and/or `logo`) shows. */
+  hideGithubIcon?: boolean;
   /** Custom text replacing the GitHub description, if any (FR-007). */
   descriptionOverride?: string;
   /** Only relevant for static download requests (FR-010). */

@@ -65,6 +65,9 @@ export const LANGUAGE_ICONS_BY_SLUG: ReadonlyMap<string, LanguageIcon> = new Map
   LANGUAGE_ICONS.map((icon) => [icon.slug, icon]),
 );
 
+/** Sentinel `languageIcon` value meaning "no language icon at all" — distinct from `undefined` (auto-detect). */
+export const NO_LANGUAGE_ICON = "none";
+
 /** Best-effort match from a GitHub Linguist language name to a curated icon. */
 export function languageIconFor(language: string | null | undefined): LanguageIcon | undefined {
   if (!language) return undefined;

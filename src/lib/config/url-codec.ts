@@ -46,6 +46,7 @@ export function decodeConfig(
   const font = params.get("font") ?? DEFAULT_FONT;
   const logo = params.get("logo") ?? undefined;
   const languageIcon = params.get("languageIcon") ?? undefined;
+  const hideGithubIcon = params.get("hideGithubIcon") === "1";
   const descriptionOverride = params.get("description") ?? undefined;
 
   const fieldsParam = params.get("fields");
@@ -67,6 +68,7 @@ export function decodeConfig(
     fields: fields.length > 0 ? fields : [...DEFAULT_VISIBLE_FIELDS],
     ...(logo ? { logo } : {}),
     ...(languageIcon ? { languageIcon } : {}),
+    ...(hideGithubIcon ? { hideGithubIcon } : {}),
     ...(descriptionOverride ? { descriptionOverride } : {}),
   };
 }
@@ -81,6 +83,7 @@ export function encodeConfig(config: RepoCardConfig): URLSearchParams {
   if (config.format !== DEFAULT_FORMAT) params.set("format", config.format);
   if (config.logo) params.set("logo", config.logo);
   if (config.languageIcon) params.set("languageIcon", config.languageIcon);
+  if (config.hideGithubIcon) params.set("hideGithubIcon", "1");
   if (config.descriptionOverride) params.set("description", config.descriptionOverride);
 
   const sortedFields = [...config.fields].sort();
