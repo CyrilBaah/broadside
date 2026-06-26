@@ -1,5 +1,15 @@
 export type Theme = "light" | "dark" | "dimmed" | "high-contrast";
-export type Pattern = "none" | "dots" | "grid" | "circuit";
+export type Pattern =
+  | "none"
+  | "dots"
+  | "grid"
+  | "circuit"
+  | "plus"
+  | "diagonal-stripes"
+  | "brick-wall"
+  | "signal"
+  | "charlie-brown"
+  | "overlapping-hexagons";
 export type Template = "default" | "minimal" | "stats-forward";
 export type ImageFormat = "png" | "jpeg" | "webp";
 export type FieldKey =
@@ -13,7 +23,18 @@ export type FieldKey =
   | "description";
 
 export const THEMES: readonly Theme[] = ["light", "dark", "dimmed", "high-contrast"];
-export const PATTERNS: readonly Pattern[] = ["none", "dots", "grid", "circuit"];
+export const PATTERNS: readonly Pattern[] = [
+  "none",
+  "dots",
+  "grid",
+  "circuit",
+  "plus",
+  "diagonal-stripes",
+  "brick-wall",
+  "signal",
+  "charlie-brown",
+  "overlapping-hexagons",
+];
 export const TEMPLATES: readonly Template[] = ["default", "minimal", "stats-forward"];
 export const IMAGE_FORMATS: readonly ImageFormat[] = ["png", "jpeg", "webp"];
 /** Display order matches the reference layout: two columns of four. */
