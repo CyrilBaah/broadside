@@ -1,9 +1,9 @@
 "use client";
 
-import { ChevronDown, Search, X } from "lucide-react";
+import { Ban, ChevronDown, Search, X } from "lucide-react";
 import { useId, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { LanguageIconGlyph } from "@/lib/icons/LanguageIconGlyph";
-import { LANGUAGE_ICONS, LANGUAGE_ICONS_BY_SLUG } from "@/lib/icons/language-icons";
+import { LANGUAGE_ICONS, LANGUAGE_ICONS_BY_SLUG, NO_LANGUAGE_ICON } from "@/lib/icons/language-icons";
 import styles from "./LanguageIconPicker.module.css";
 
 export interface LanguageIconPickerProps {
@@ -13,16 +13,19 @@ export interface LanguageIconPickerProps {
 
 /**
  * Curated language-icon combo mark (GitHub octocat + a brand icon), matching
- * the reference tool's "Language Icon" dropdown. Mutually exclusive with a
- * custom logo upload — selecting one clears the other (enforced by the
- * caller in page.tsx, since both live in the same RepoCardConfig).
+ * the reference tool's "Language Icon" dropdown. Can render alongside a
+ * custom logo upload; see HideGithubIconToggle to drop the octocat from it.
+ * Selecting "None" sets the `NO_LANGUAGE_ICON` sentinel so no language icon
+ * renders at all, as opposed to "Auto-detect" which falls back to the repo's
+ * primary language.
  */
 export function LanguageIconPicker({ value, onChange }: LanguageIconPickerProps) {
   const [query, setQuery] = useState("");
   const popoverId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const selected = value ? LANGUAGE_ICONS_BY_SLUG.get(value) : undefined;
+  const isNone = value === NO_LANGUAGE_ICON;
+  const selected = value && !isNone ? LANGUAGE_ICONS_BY_SLUG.get(value) : undefined;
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -54,10 +57,14 @@ export function LanguageIconPicker({ value, onChange }: LanguageIconPickerProps)
       >
         {selected ? (
           <LanguageIconGlyph path={selected.path} size={18} color={`#${selected.hex}`} />
+        ) : isNone ? (
+          <Ban size={16} strokeWidth={2} aria-hidden="true" />
         ) : (
           <span className={styles.triggerPlaceholderIcon} aria-hidden="true" />
         )}
-        <span className={styles.triggerLabel}>{selected ? selected.title : "Auto-detect"}</span>
+        <span className={styles.triggerLabel}>
+          {selected ? selected.title : isNone ? "None" : "Auto-detect"}
+        </span>
         <ChevronDown size={14} strokeWidth={2} aria-hidden="true" />
       </button>
 
@@ -86,6 +93,19 @@ export function LanguageIconPicker({ value, onChange }: LanguageIconPickerProps)
             >
               <X size={16} strokeWidth={2} aria-hidden="true" />
               <span>Auto-detect from repo language</span>
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              role="option"
+              aria-selected={isNone}
+              className={styles.option}
+              data-selected={isNone || undefined}
+              onClick={() => select(NO_LANGUAGE_ICON)}
+            >
+              <Ban size={16} strokeWidth={2} aria-hidden="true" />
+              <span>None</span>
             </button>
           </li>
           {results.map((icon) => (

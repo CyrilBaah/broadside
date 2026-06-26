@@ -9,6 +9,7 @@ import { CustomizationPanel } from "@/components/customization-panel/Customizati
 import { DescriptionOverride } from "@/components/customization-panel/DescriptionOverride";
 import { ExportPanel } from "@/components/customization-panel/ExportPanel";
 import { FieldVisibility } from "@/components/customization-panel/FieldVisibility";
+import { HideGithubIconToggle } from "@/components/customization-panel/HideGithubIconToggle";
 import { LanguageIconPicker } from "@/components/customization-panel/LanguageIconPicker";
 import { LogoUpload } from "@/components/customization-panel/LogoUpload";
 import { RepoField } from "@/components/customization-panel/RepoField";
@@ -123,8 +124,6 @@ export default function ConfigUiPage() {
             </div>
 
             <div className={styles.optionsPanel}>
-              <h2 className={styles.optionsHeading}>Customize</h2>
-
               <RepoField value={url} onChange={setUrl} onSubmit={handleSubmit} error={parseError} />
 
               <div className={styles.divider} />
@@ -139,12 +138,14 @@ export default function ConfigUiPage() {
 
               <LanguageIconPicker
                 value={config.languageIcon}
-                onChange={(languageIcon) => setConfig({ ...config, languageIcon, logo: undefined })}
+                onChange={(languageIcon) => setConfig({ ...config, languageIcon })}
               />
 
-              <LogoUpload
-                value={config.logo}
-                onChange={(logo) => setConfig({ ...config, logo, languageIcon: undefined })}
+              <LogoUpload value={config.logo} onChange={(logo) => setConfig({ ...config, logo })} />
+
+              <HideGithubIconToggle
+                value={config.hideGithubIcon ?? false}
+                onChange={(hideGithubIcon) => setConfig({ ...config, hideGithubIcon })}
               />
 
               <div className={styles.divider} />

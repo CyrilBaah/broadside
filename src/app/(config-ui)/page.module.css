@@ -304,11 +304,6 @@
   overflow-y: auto;
 }
 
-.optionsHeading {
-  font-size: var(--text-base);
-  font-weight: 600;
-}
-
 .divider {
   height: 1px;
   background: var(--border);
