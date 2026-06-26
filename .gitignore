@@ -24,3 +24,9 @@ next-env.d.ts
 .DS_Store
 *.log
 .vercel
+
+# agent tooling (local-only)
+.claude/
+.impeccable/
+.specify/
+CLAUDE.md
