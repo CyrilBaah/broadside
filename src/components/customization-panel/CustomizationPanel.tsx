@@ -26,6 +26,12 @@ const PATTERN_LABELS: Record<Pattern, string> = {
   dots: "Dots",
   grid: "Grid",
   circuit: "Circuit",
+  plus: "Plus",
+  "diagonal-stripes": "Diagonal stripes",
+  "brick-wall": "Brick wall",
+  signal: "Signal",
+  "charlie-brown": "Charlie Brown",
+  "overlapping-hexagons": "Overlapping hexagons",
 };
 
 const THEME_LABELS: Record<Theme, string> = {

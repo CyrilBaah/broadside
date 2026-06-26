@@ -1,7 +1,7 @@
 import { CardMark } from "../card-mark";
 import { colorsFor } from "../colors";
 import { fontFamilyFor } from "../fonts";
-import { backgroundImageFor } from "../patterns";
+import { backgroundStyleFor } from "../patterns";
 import { StatBadges } from "../stat-badges";
 import { CARD_HEIGHT, CARD_WIDTH, type TemplateProps } from "../types";
 import { hasField } from "../../config/schema";
@@ -13,7 +13,7 @@ import { hasField } from "../../config/schema";
 export function StatsForwardTemplate({ config, snapshot }: TemplateProps) {
   const colors = colorsFor(config.theme);
   const fontFamily = fontFamilyFor(config.font);
-  const backgroundImage = backgroundImageFor(config.pattern, colors.border);
+  const backgroundStyle = backgroundStyleFor(config.pattern, colors.border);
   const meta = snapshot.meta ?? { name: `${config.owner}/${config.repo}`, description: null };
   const description = hasField(config, "description") ? config.descriptionOverride ?? meta.description : null;
   const showName = hasField(config, "name");
@@ -29,7 +29,7 @@ export function StatsForwardTemplate({ config, snapshot }: TemplateProps) {
         backgroundColor: colors.background,
         fontFamily,
         padding: 48,
-        ...(backgroundImage ? { backgroundImage } : {}),
+        ...(backgroundStyle ?? {}),
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
