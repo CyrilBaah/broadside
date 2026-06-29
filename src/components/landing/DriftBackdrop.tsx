@@ -73,10 +73,10 @@ const SHAPES: ShapeConfig[] = [
 ];
 
 const KEYFRAME_CLASS: Record<Keyframe, string> = {
-  a: styles.kfA,
-  b: styles.kfB,
-  c: styles.kfC,
-  d: styles.kfD,
+  a: styles.kfA!,
+  b: styles.kfB!,
+  c: styles.kfC!,
+  d: styles.kfD!,
 };
 
 export function DriftBackdrop() {
